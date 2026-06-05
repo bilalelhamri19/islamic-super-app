@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Trophy, Settings, Sun, Moon } from 'lucide-react';
+import { Home, BookOpen, Trophy, Settings, Lock, LogOut } from 'lucide-react';
 import styles from './AppLayout.module.css';
 
 export function AppLayout() {
@@ -10,40 +10,37 @@ export function AppLayout() {
       const saved = localStorage.getItem('mizan_auth_user');
       return saved ? JSON.parse(saved) : null;
     } catch (e) {
-      console.error(e);
       return null;
     }
   });
-  const [isDark, setIsDark] = useState(false);
+
   const [stats, setStats] = useState(() => {
     try {
       const saved = localStorage.getItem('mizan_user_stats');
       if (saved) {
         const parsed = JSON.parse(saved);
-        return {
-          level: parsed.level || 4,
-          points: parsed.points || 2450
-        };
+        return { level: parsed.level || 4, points: parsed.points || 2450 };
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
     return { level: 4, points: 2450 };
   });
 
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDark(true);
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  }, []);
+  // Secret admin access: click lock icon 5 times quickly
+  const clickCount = useRef(0);
+  const clickTimer = useRef(null);
 
-  // No redirect — visitors can access the app freely
-  // Only admin features are restricted
+  const handleSecretClick = () => {
+    clickCount.current += 1;
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    if (clickCount.current >= 5) {
+      clickCount.current = 0;
+      navigate('/login');
+    } else {
+      clickTimer.current = setTimeout(() => {
+        clickCount.current = 0;
+      }, 2000);
+    }
+  };
 
   useEffect(() => {
     const handleSync = () => {
@@ -51,30 +48,27 @@ export function AppLayout() {
         const saved = localStorage.getItem('mizan_user_stats');
         if (saved) {
           const parsed = JSON.parse(saved);
-          setStats({
-            level: parsed.level || 4,
-            points: parsed.points || 2450
-          });
+          setStats({ level: parsed.level || 4, points: parsed.points || 2450 });
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
     };
     window.addEventListener('mizan_stats_updated', handleSync);
     return () => window.removeEventListener('mizan_stats_updated', handleSync);
   }, []);
 
-  const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
+  // Listen for user changes (after login/logout)
+  useEffect(() => {
+    const handleUserChange = () => {
+      try {
+        const saved = localStorage.getItem('mizan_auth_user');
+        setUser(saved ? JSON.parse(saved) : null);
+      } catch (e) {
+        setUser(null);
+      }
+    };
+    window.addEventListener('mizan_stats_updated', handleUserChange);
+    return () => window.removeEventListener('mizan_stats_updated', handleUserChange);
+  }, []);
 
   const allNavItems = [
     { name: 'Home', path: '/', icon: <Home size={22} /> },
@@ -84,6 +78,11 @@ export function AppLayout() {
   ];
 
   const navItems = allNavItems.filter(item => !item.adminOnly || user?.isAdmin);
+
+  const handleLogout = () => {
+    localStorage.removeItem('mizan_auth_user');
+    setUser(null);
+  };
 
   return (
     <div className={styles.layout}>
@@ -95,13 +94,13 @@ export function AppLayout() {
             <h1 className={styles.logoText}>Mizan</h1>
           </div>
         </div>
-        
+
         <nav className={styles.nav}>
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => 
+              className={({ isActive }) =>
                 isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
               }
             >
@@ -113,19 +112,29 @@ export function AppLayout() {
 
         <div className={styles.bottomSection}>
           <div className={styles.profile}>
-            <div className={styles.avatar}>{user?.email ? user.email.charAt(0).toUpperCase() : 'Z'}</div>
+            <div className={styles.avatar}>
+              {user?.isAdmin ? 'A' : '☪'}
+            </div>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{user?.isAdmin ? 'Admin' : 'Visitor'}</span>
               <span className={styles.userStatus}>Level {stats.level} Seeker</span>
             </div>
           </div>
-          {user?.isAdmin && (
-            <button className={styles.logoutBtn} onClick={() => {
-              localStorage.removeItem('mizan_auth_user');
-              setUser(null);
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+
+          {user?.isAdmin ? (
+            <button className={styles.logoutBtn} onClick={handleLogout} title="Logout">
+              <LogOut size={16} />
               Log out
+            </button>
+          ) : (
+            /* Secret admin access button — hidden from normal users */
+            <button
+              className={styles.secretAdminBtn}
+              onClick={handleSecretClick}
+              title=""
+              aria-label=""
+            >
+              <Lock size={12} />
             </button>
           )}
         </div>
@@ -136,16 +145,7 @@ export function AppLayout() {
         <div className={styles.header}>
           <div className={styles.welcome}>
             <p className="text-small">As-salamu alaykum,</p>
-            <h2 className="heading-md">{user?.email?.split('@')[0] || 'Guest'}</h2>
-          </div>
-          <div className={styles.actions}>
-            <button 
-              className={styles.themeToggle} 
-              onClick={toggleTheme}
-              aria-label="Toggle Dark Mode"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            <h2 className="heading-md">{user?.isAdmin ? 'Admin' : 'Guest'}</h2>
           </div>
         </div>
         <div className={styles.pageContent}>
@@ -159,7 +159,7 @@ export function AppLayout() {
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => 
+            className={({ isActive }) =>
               isActive ? `${styles.mobileNavItem} ${styles.active}` : styles.mobileNavItem
             }
           >
