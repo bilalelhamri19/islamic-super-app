@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Home, BookOpen, Trophy, Settings, Lock, LogOut } from 'lucide-react';
+import { WelcomeModal } from '../WelcomeModal';
 import styles from './AppLayout.module.css';
 
 export function AppLayout() {
@@ -12,6 +13,11 @@ export function AppLayout() {
     } catch (e) {
       return null;
     }
+  });
+
+  // Show welcome modal on first visit (per session)
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !sessionStorage.getItem('mizan_welcomed');
   });
 
   const [stats, setStats] = useState(() => {
@@ -86,6 +92,8 @@ export function AppLayout() {
 
   return (
     <div className={styles.layout}>
+      {/* Welcome Modal for first-time visitors */}
+      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
       {/* Sidebar Navigation */}
       <aside className={styles.sidebar}>
         <div className={styles.logoContainer}>
