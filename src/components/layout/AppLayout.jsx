@@ -42,12 +42,8 @@ export function AppLayout() {
     }
   }, []);
 
-  // Redirect to login if no user detected
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
+  // No redirect — visitors can access the app freely
+  // Only admin features are restricted
 
   useEffect(() => {
     const handleSync = () => {
@@ -117,20 +113,21 @@ export function AppLayout() {
 
         <div className={styles.bottomSection}>
           <div className={styles.profile}>
-            <div className={styles.avatar}>{user?.email ? user.email.charAt(0).toUpperCase() : 'U'}</div>
+            <div className={styles.avatar}>{user?.email ? user.email.charAt(0).toUpperCase() : 'Z'}</div>
             <div className={styles.userInfo}>
-              <span className={styles.userName}>{user?.email || 'Guest'}</span>
+              <span className={styles.userName}>{user?.isAdmin ? 'Admin' : 'Visitor'}</span>
               <span className={styles.userStatus}>Level {stats.level} Seeker</span>
             </div>
           </div>
-          <button className={styles.logoutBtn} onClick={() => {
-            localStorage.removeItem('mizan_auth_user');
-            setUser(null);
-            navigate('/login');
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Log out
-          </button>
+          {user?.isAdmin && (
+            <button className={styles.logoutBtn} onClick={() => {
+              localStorage.removeItem('mizan_auth_user');
+              setUser(null);
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Log out
+            </button>
+          )}
         </div>
       </aside>
 
@@ -166,7 +163,9 @@ export function AppLayout() {
               isActive ? `${styles.mobileNavItem} ${styles.active}` : styles.mobileNavItem
             }
           >
-            {/* Public Routes - login removed */}         </NavLink>
+            <div className={styles.icon}>{item.icon}</div>
+            <span className={styles.mobileNavText}>{item.name}</span>
+          </NavLink>
         ))}
       </nav>
     </div>
