@@ -5,7 +5,8 @@ import Home from './pages/Home';
 import Quran from './pages/Quran';
 import Game from './pages/Game';
 import Admin from './pages/Admin';
-import Login from './pages/Login';
+import ClientLogin from './pages/ClientLogin';
+import AdminLogin from './pages/AdminLogin';
 import Adhkar from './pages/Adhkar';
 import Qibla from './pages/Qibla';
 
@@ -13,7 +14,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<ClientLogin />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
 
         {/* Private Layout wrapper */}
         <Route path="/" element={<AppLayout />}>

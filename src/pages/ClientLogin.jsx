@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import styles from './WelcomeModal.module.css';
+import { useNavigate } from 'react-router-dom';
+import styles from './ClientLogin.module.css';
 
-export function WelcomeModal({ onClose }) {
+export default function ClientLogin() {
+  const navigate = useNavigate();
   const [view, setView] = useState('default'); // 'default' or 'email'
   const [emailInput, setEmailInput] = useState('');
 
@@ -9,7 +11,7 @@ export function WelcomeModal({ onClose }) {
     localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
     sessionStorage.setItem('mizan_welcomed', 'true');
     window.dispatchEvent(new Event('mizan_stats_updated'));
-    onClose();
+    navigate('/');
   };
 
   const handleContinue = (method) => {
@@ -21,7 +23,7 @@ export function WelcomeModal({ onClose }) {
       setView('email');
     } else if (method === 'guest') {
       sessionStorage.setItem('mizan_welcomed', 'true');
-      onClose();
+      navigate('/');
     }
   };
 
@@ -33,8 +35,8 @@ export function WelcomeModal({ onClose }) {
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
+    <div className={styles.pageContainer}>
+      <div className={styles.loginCard}>
         {/* Left Panel - Branding */}
         <div className={styles.leftPanel}>
           <div className={styles.brandWrap}>
@@ -153,6 +155,9 @@ export function WelcomeModal({ onClose }) {
               {' '}و{' '}
               <a href="#">سياسة الخصوصية</a>
             </p>
+            <div className={styles.adminLoginLink}>
+              <a href="/admin-login">دخول الإدارة</a>
+            </div>
           </div>
         </div>
       </div>

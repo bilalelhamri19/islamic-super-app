@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Trophy, Settings, Lock, LogOut } from 'lucide-react';
-import { WelcomeModal } from '../WelcomeModal';
+import { Home, BookOpen, Trophy, Settings, Lock, LogIn, LogOut } from 'lucide-react';
 import styles from './AppLayout.module.css';
 
 export function AppLayout() {
@@ -15,10 +14,6 @@ export function AppLayout() {
     }
   });
 
-  // Show welcome modal on first visit (per session)
-  const [showWelcome, setShowWelcome] = useState(() => {
-    return !sessionStorage.getItem('mizan_welcomed');
-  });
 
   const [stats, setStats] = useState(() => {
     try {
@@ -31,22 +26,7 @@ export function AppLayout() {
     return { level: 4, points: 2450 };
   });
 
-  // Secret admin access: click lock icon 5 times quickly
-  const clickCount = useRef(0);
-  const clickTimer = useRef(null);
 
-  const handleSecretClick = () => {
-    clickCount.current += 1;
-    if (clickTimer.current) clearTimeout(clickTimer.current);
-    if (clickCount.current >= 5) {
-      clickCount.current = 0;
-      navigate('/login');
-    } else {
-      clickTimer.current = setTimeout(() => {
-        clickCount.current = 0;
-      }, 2000);
-    }
-  };
 
   useEffect(() => {
     const handleSync = () => {
@@ -92,8 +72,6 @@ export function AppLayout() {
 
   return (
     <div className={styles.layout}>
-      {/* Welcome Modal for first-time visitors */}
-      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
       {/* Sidebar Navigation */}
       <aside className={styles.sidebar}>
         <div className={styles.logoContainer}>
@@ -121,28 +99,28 @@ export function AppLayout() {
         <div className={styles.bottomSection}>
           <div className={styles.profile}>
             <div className={styles.avatar}>
-              {user?.isAdmin ? 'A' : '☪'}
+              {user?.isAdmin ? 'A' : user?.name ? user.name.charAt(0).toUpperCase() : '☪'}
             </div>
             <div className={styles.userInfo}>
-              <span className={styles.userName}>{user?.isAdmin ? 'Admin' : 'Visitor'}</span>
+              <span className={styles.userName}>{user?.isAdmin ? 'Admin' : user?.name || 'Visitor'}</span>
               <span className={styles.userStatus}>Level {stats.level} Seeker</span>
             </div>
           </div>
 
-          {user?.isAdmin ? (
+          {user ? (
             <button className={styles.logoutBtn} onClick={handleLogout} title="Logout">
               <LogOut size={16} />
-              Log out
+              تسجيل الخروج
             </button>
           ) : (
-            /* Secret admin access button — hidden from normal users */
             <button
-              className={styles.secretAdminBtn}
-              onClick={handleSecretClick}
-              title=""
-              aria-label=""
+              className={styles.logoutBtn}
+              onClick={() => navigate('/login')}
+              title="Login"
+              style={{ background: '#1a6b4a', color: 'white', border: 'none' }}
             >
-              <Lock size={12} />
+              <LogIn size={16} />
+              تسجيل الدخول
             </button>
           )}
         </div>
@@ -153,7 +131,7 @@ export function AppLayout() {
         <div className={styles.header}>
           <div className={styles.welcome}>
             <p className="text-small">As-salamu alaykum,</p>
-            <h2 className="heading-md">{user?.isAdmin ? 'Admin' : 'Guest'}</h2>
+            <h2 className="heading-md">{user?.isAdmin ? 'Admin' : user?.name || 'Guest'}</h2>
           </div>
         </div>
         <div className={styles.pageContent}>
