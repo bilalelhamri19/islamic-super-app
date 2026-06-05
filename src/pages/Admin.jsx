@@ -9,6 +9,19 @@ export default function Admin() {
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
+  // Admin access guard
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('mizan_auth_user');
+      const user = saved ? JSON.parse(saved) : null;
+      if (!user?.isAdmin) {
+        navigate('/');
+      }
+    } catch (e) {
+      navigate('/');
+    }
+  }, [navigate]);
+
   const [users, setUsers] = useState(() => {
     try {
       const saved = localStorage.getItem('mizan_admin_users');

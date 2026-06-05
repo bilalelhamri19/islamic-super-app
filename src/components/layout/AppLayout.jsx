@@ -42,14 +42,12 @@ export function AppLayout() {
     }
   }, []);
 
-  // Auto-login admin if no user detected
+  // Redirect to login if no user detected
   useEffect(() => {
     if (!user) {
-      const adminUser = { email: 'bilalelhamri2006@gmail.com', isAdmin: true };
-      localStorage.setItem('mizan_auth_user', JSON.stringify(adminUser));
-      setUser(adminUser);
+      navigate('/login');
     }
-  }, [user]);
+  }, [user, navigate]);
 
   useEffect(() => {
     const handleSync = () => {
@@ -82,12 +80,14 @@ export function AppLayout() {
     }
   };
 
-  const navItems = [
+  const allNavItems = [
     { name: 'Home', path: '/', icon: <Home size={22} /> },
     { name: 'Quran', path: '/quran', icon: <BookOpen size={22} /> },
     { name: 'Learning', path: '/game', icon: <Trophy size={22} /> },
-    { name: 'Admin', path: '/admin', icon: <Settings size={22} /> },
+    { name: 'Admin', path: '/admin', icon: <Settings size={22} />, adminOnly: true },
   ];
+
+  const navItems = allNavItems.filter(item => !item.adminOnly || user?.isAdmin);
 
   return (
     <div className={styles.layout}>

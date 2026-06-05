@@ -7,14 +7,22 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Simple mock authentication
+    setError('');
+
+    // Admin-only authentication
     const isAdmin = email === 'bilalelhamri2006@gmail.com' && password === 'admin123';
-    const userObj = { email, isAdmin };
+
+    if (!isAdmin) {
+      setError('Access denied. Only admin accounts can sign in.');
+      return;
+    }
+
+    const userObj = { email, isAdmin: true };
     localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-    // Trigger stats sync if needed
     window.dispatchEvent(new Event('mizan_stats_updated'));
     navigate('/');
   };
@@ -29,8 +37,14 @@ export default function Login() {
         
         <div className={styles.welcomeSection}>
           <h2 className="heading-lg">مرحباً بك</h2>
-          <p className="text-body">Welcome back. Please enter your details.</p>
+          <p className="text-body">Admin access only. Please enter your credentials.</p>
         </div>
+
+        {error && (
+          <div className={styles.errorBox}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className={styles.form}>
           <div className={styles.inputGroup}>
@@ -39,7 +53,7 @@ export default function Login() {
               type="email" 
               id="email"
               className={styles.input} 
-              placeholder="ahmed@example.com"
+              placeholder="admin@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required 
@@ -49,7 +63,6 @@ export default function Login() {
           <div className={styles.inputGroup}>
             <div className={styles.passwordHeader}>
               <label htmlFor="password" className={styles.label}>Password</label>
-              <a href="#" className={styles.forgotLink}>Forgot password?</a>
             </div>
             <input 
               type="password" 
@@ -69,7 +82,7 @@ export default function Login() {
 
         <div className={styles.footer}>
           <p className="text-small">
-            Don't have an account? <a href="#" className={styles.registerLink}>Sign up</a>
+            🔒 Restricted to administrators only
           </p>
         </div>
       </div>

@@ -104,6 +104,23 @@
   gap: var(--spacing-5);
 }
 
+.errorBox {
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border-left: 4px solid #EF4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: shakeIn 0.3s ease-out;
+}
+
+@keyframes shakeIn {
+  0% { transform: translateX(-8px); opacity: 0; }
+  50% { transform: translateX(4px); }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;
