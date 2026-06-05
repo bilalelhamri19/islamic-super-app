@@ -74,7 +74,7 @@
 
 .lockedNode {
   background-color: var(--secondary-stone);
-  color: var(--white);
+  color: #ffffff;
 }
 
 .connector {

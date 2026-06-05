@@ -13,7 +13,7 @@
 /* Variants */
 .primary {
   background-color: var(--primary-emerald);
-  color: var(--white);
+  color: #ffffff;
   box-shadow: var(--shadow-sm);
 }
 

@@ -252,14 +252,14 @@
 
 .playBtn {
   background-color: var(--primary-emerald);
-  color: var(--white);
+  color: #ffffff;
   width: 48px;
   height: 48px;
 }
 
 .playBtn:hover {
   background-color: var(--primary-green);
-  color: var(--white);
+  color: #ffffff;
   transform: scale(1.05);
 }
 

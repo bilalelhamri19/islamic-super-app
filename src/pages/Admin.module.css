@@ -82,7 +82,7 @@
   width: 32px;
   height: 32px;
   background-color: var(--accent-gold);
-  color: var(--white);
+  color: #ffffff;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
