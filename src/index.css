@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Primary Colors */
+  --primary-emerald: #0F5C4D;
+  --primary-green: #136F63;
+  --primary-sage: #7FAF9A;
+
+  /* Secondary Colors */
+  --secondary-ivory: #F8F5EF;
+  --secondary-sand: #E8DDC8;
+  --secondary-stone: #D9D4CC;
+
+  /* Accent Colors */
+  --accent-gold: #C8A96B;
+  --accent-bronze: #A8844F;
+
+  /* Text Colors */
+  --text-charcoal: #1F2937;
+  --text-slate: #4B5563;
+  --text-gray: #6B7280;
+  
+  /* System */
+  --white: #FFFFFF;
+  --border-light: #EFEBE4;
+
+  /* Legacy Mappings for CSS Modules */
+  --primary: var(--primary-emerald);
+  --primary-light: #E6F0EE;
+  --primary-dark: #0B4A3E;
+  --gold: var(--accent-gold);
+  --border: var(--border-light);
+  --text-primary: var(--text-charcoal);
+  --text-secondary: var(--text-gray);
+  --surface-1: var(--white);
+  --surface-2: var(--secondary-stone);
+
+  /* Layout & Spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.5rem;
+  --spacing-6: 2rem;
+  --spacing-8: 3rem;
+  
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(31, 41, 55, 0.04);
+  --shadow-md: 0 4px 16px rgba(31, 41, 55, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 92, 77, 0.06);
+
+  /* Fonts */
+  --font-latin: 'Inter', sans-serif;
+  --font-arabic: 'Amiri', serif;
+}
+
+[data-theme='dark'] {
+  --secondary-ivory: #0B1F1A;
+  --secondary-sand: #102C25;
+  --secondary-stone: #153930;
+  
+  --text-charcoal: #F8F5EF;
+  --text-slate: #D9D4CC;
+  --text-gray: #A8844F;
+  --white: #0A1714;
+  --border-light: #16362E;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-latin);
+  background-color: var(--secondary-ivory);
+  color: var(--text-charcoal);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Utility Classes */
+.heading-xl {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.heading-lg {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.heading-md {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-slate);
+}
+
+.text-small {
+  font-size: 0.875rem;
+  color: var(--text-gray);
+}
+
+.arabic-text {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  font-size: 1.75rem;
+  line-height: 2;
+}
+
+.arabic-text-large {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  font-size: 2.5rem;
+  line-height: 2.2;
+}
+
+/* Reset / Global utilities */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}

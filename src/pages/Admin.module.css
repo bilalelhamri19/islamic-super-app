@@ -1,0 +1,223 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-5);
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--secondary-ivory);
+  color: var(--primary-emerald);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recentActivity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.tableCard {
+  padding: 0; /* Remove padding for edge-to-edge table */
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  padding: var(--spacing-4) var(--spacing-5);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-slate);
+  background-color: var(--secondary-ivory);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.table td {
+  padding: var(--spacing-4) var(--spacing-5);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-charcoal);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.userNameCell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-weight: 500;
+}
+
+.avatarMini {
+  width: 32px;
+  height: 32px;
+  background-color: var(--accent-gold);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.Active {
+  background-color: rgba(19, 111, 99, 0.1);
+  color: var(--primary-emerald);
+}
+
+.PendingReview {
+  background-color: rgba(200, 169, 107, 0.1);
+  color: var(--accent-bronze);
+}
+
+.actionBtn {
+  color: var(--text-slate);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
+}
+
+.actionBtn:hover {
+  background-color: var(--secondary-ivory);
+  color: var(--primary-emerald);
+}
+
+/* Table row hover */
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(19, 111, 99, 0.04);
+}
+
+/* Challenge Config */
+.challengeConfig {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-5);
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-charcoal);
+  white-space: nowrap;
+}
+
+.input {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-family: var(--font-latin);
+  color: var(--text-charcoal);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  max-width: 280px;
+}
+
+.input:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px rgba(19, 111, 99, 0.12);
+}
+
+.input::placeholder {
+  color: var(--text-gray);
+}
+
+/* Add User Form */
+.addUserForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-5);
+  padding: var(--spacing-5) var(--spacing-6);
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.addUserForm h4 {
+  width: 100%;
+  margin-bottom: var(--spacing-1);
+  color: var(--text-charcoal);
+}
+
+.addUserForm .input {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Admin header logout button */
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--text-slate);
+  border: 1.5px solid var(--border-light);
+  padding: 8px 18px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: rgba(220, 53, 69, 0.08);
+  border-color: rgba(220, 53, 69, 0.4);
+  color: #dc3545;
+}

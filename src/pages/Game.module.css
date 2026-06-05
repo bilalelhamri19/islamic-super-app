@@ -1,0 +1,303 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+
+.statsRow {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.statBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--white);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.iconFire {
+  color: #F97316; /* warm orange for streak */
+}
+
+.iconStar {
+  color: var(--accent-gold);
+}
+
+/* Learning Path */
+.levelPath {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: flex-start;
+  padding-left: var(--spacing-4);
+}
+
+.pathNode {
+  display: flex;
+  gap: var(--spacing-5);
+  width: 100%;
+}
+
+.nodeCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2;
+  border: 4px solid var(--secondary-ivory);
+  box-shadow: var(--shadow-md);
+}
+
+.activeNode {
+  background-color: var(--primary-emerald);
+  color: var(--accent-gold);
+}
+
+.lockedNode {
+  background-color: var(--secondary-stone);
+  color: var(--white);
+}
+
+.connector {
+  width: 4px;
+  height: 48px;
+  background-color: var(--border-light);
+  margin-left: 26px; /* align with center of 56px circle */
+  position: relative;
+}
+
+.levelCard {
+  flex: 1;
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-2);
+}
+
+.levelTag {
+  font-size: 0.75rem;
+  color: var(--primary-sage);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.progressContainer {
+  margin-top: var(--spacing-4);
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-2);
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--secondary-sand);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--primary-emerald);
+  border-radius: var(--radius-full);
+  transition: width 1s ease-in-out;
+}
+
+/* Quiz Specific Styling */
+.quizCard {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.questionText {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-charcoal);
+  margin-bottom: 1rem;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.optionBtn {
+  text-align: left;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background-color: var(--white);
+  color: var(--text-charcoal);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.optionBtn:hover:not(:disabled) {
+  background-color: var(--secondary-ivory);
+  border-color: var(--primary-sage);
+  transform: translateX(3px);
+}
+
+.optionSelected {
+  background-color: var(--secondary-sand) !important;
+  border-color: var(--accent-gold) !important;
+  font-weight: 600;
+}
+
+.optionCorrect {
+  background-color: #ECFDF5 !important;
+  border-color: #10B981 !important;
+  color: #065F46 !important;
+}
+
+.optionIncorrect {
+  background-color: #FEF2F2 !important;
+  border-color: #EF4444 !important;
+  color: #991B1B !important;
+}
+
+.feedbackBox {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.correctFeedback {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border-left: 4px solid #10B981;
+}
+
+.incorrectFeedback {
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border-left: 4px solid #EF4444;
+}
+
+.resultsContainer {
+  text-align: center;
+  padding: var(--spacing-6) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: pulseIn 0.5s ease-out;
+}
+
+@keyframes pulseIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.scoreDisplay {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--primary-emerald);
+  line-height: 1;
+}
+
+.answersReview {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.reviewDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.reviewDot.correct {
+  background-color: #10B981;
+}
+
+.reviewDot.wrong {
+  background-color: #EF4444;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--primary-emerald);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.backButton:hover {
+  transform: translateX(-4px);
+}
+
+/* CSS-based particle confetti */
+.confettiContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.confettiPiece {
+  position: absolute;
+  width: 8px;
+  height: 16px;
+  background-color: var(--accent-gold);
+  opacity: 0.8;
+  animation: fall 3s linear infinite;
+}
+
+@keyframes fall {
+  0% { transform: translateY(-50px) rotate(0deg); }
+  100% { transform: translateY(600px) rotate(360deg); }
+}
