@@ -199,76 +199,99 @@
   text-align: right;
 }
 
-.authButtons {
+.roleSelectionGrid {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
-.authBtn {
+.roleCard {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.875rem;
+  gap: 1.25rem;
   width: 100%;
-  padding: 0.875rem 1.25rem;
-  border-radius: 12px;
-  border: 1.5px solid #e5e7eb;
+  padding: 1.25rem;
+  border-radius: 16px;
+  border: 1.5px solid #f3f4f6;
   background: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: right;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
 }
 
-.authBtn:hover {
+.roleCard:hover {
+  transform: translateY(-3px);
+}
+
+.guestCard:hover {
   border-color: #1a6b4a;
-  background: #f0fdf4;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(26, 107, 74, 0.1);
+  background: #f4fbf7;
+  box-shadow: 0 12px 24px -10px rgba(26, 107, 74, 0.15);
 }
 
-.authBtn svg {
-  flex-shrink: 0;
+.adminCard:hover {
+  border-color: #d4af37;
+  background: #fffdf2;
+  box-shadow: 0 12px 24px -10px rgba(212, 175, 55, 0.15);
 }
 
-.divider {
+.roleIconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin: 1.25rem 0;
-  color: #9ca3af;
-  font-size: 0.85rem;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
 
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e5e7eb;
+.roleCard:hover .roleIconWrapper {
+  transform: scale(1.1);
 }
 
-.guestBtn {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 12px;
-  border: none;
-  background: #f3f4f6;
-  color: #374151;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-  margin-bottom: 1.5rem;
+.guestCard .roleIconWrapper {
+  background: #e8f5e9;
 }
 
-.guestBtn:hover {
-  background: #e5e7eb;
+.adminCard .roleIconWrapper {
+  background: #fff8e1;
+}
+
+.roleIcon {
+  font-size: 1.5rem;
+}
+
+.roleTextWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: right;
+  flex-grow: 1;
+}
+
+.roleCardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.guestCard:hover .roleCardTitle {
+  color: #1a6b4a;
+}
+
+.adminCard:hover .roleCardTitle {
+  color: #c89c1e;
+}
+
+.roleCardDesc {
+  font-size: 0.825rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .terms {
@@ -285,7 +308,7 @@
 
 /* ─── Mobile ─── */
 @media (max-width: 640px) {
-  .modal {
+  .loginCard {
     flex-direction: column;
     max-height: 95vh;
     overflow-y: auto;
@@ -307,84 +330,4 @@
   .rightPanel {
     padding: 2rem 1.5rem;
   }
-}
-
-/* ─── Email Form View ─── */
-.emailFormView {
-  display: flex;
-  flex-direction: column;
-  animation: fadeIn 0.3s ease;
-}
-
-.backBtn {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  color: #6b7280;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-bottom: 1.5rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.backBtn:hover {
-  color: #1a6b4a;
-}
-
-.emailInput {
-  width: 100%;
-  padding: 0.875rem 1.25rem;
-  border-radius: 12px;
-  border: 1.5px solid #e5e7eb;
-  font-size: 1rem;
-  margin-bottom: 1.25rem;
-  text-align: right;
-  direction: ltr;
-  transition: all 0.2s ease;
-}
-
-.emailInput:focus {
-  outline: none;
-  border-color: #1a6b4a;
-  box-shadow: 0 0 0 3px rgba(26, 107, 74, 0.1);
-}
-
-.submitEmailBtn {
-  width: 100%;
-  padding: 0.875rem 1.25rem;
-  border-radius: 12px;
-  border: none;
-  background: #1a6b4a;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 1.5rem;
-}
-
-.submitEmailBtn:hover {
-  background: #14533a;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(26, 107, 74, 0.2);
-}
-
-.adminLoginLink {
-  margin-top: 1.5rem;
-  text-align: center;
-}
-
-.adminLoginLink a {
-  font-size: 0.85rem;
-  color: #6b7280;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.adminLoginLink a:hover {
-  color: #1a6b4a;
-  text-decoration: underline;
 }

@@ -69,27 +69,37 @@ export default function ClientLogin() {
         <div className={styles.rightPanel}>
           <div className={styles.authContent}>
               <>
-                <h3 className={styles.authTitle}>تسجيل الدخول أو إنشاء حساب في ثوانٍ</h3>
+                <h3 className={styles.authTitle}>مرحباً بك في تطبيق ميزان</h3>
                 <p className={styles.authSubtitle}>
-                  استخدم بريدك الإلكتروني أو أي خدمة أخرى للمتابعة مجاناً
+                  اختر طريقة الدخول المناسبة لك للمتابعة مجاناً
                 </p>
 
-                <div className={styles.authButtons}>
-                  <button
-                    className={styles.guestBtn}
+                <div className={styles.roleSelectionGrid}>
+                  <div 
+                    className={`${styles.roleCard} ${styles.guestCard}`}
                     onClick={() => handleContinue('guest')}
-                    style={{ marginBottom: '1rem' }}
                   >
-                    المتابعة كزائر
-                  </button>
-                  
-                  <button
-                    className={`${styles.authBtn} ${styles.emailBtn}`}
+                    <div className={styles.roleIconWrapper}>
+                      <span className={styles.roleIcon}>👤</span>
+                    </div>
+                    <div className={styles.roleTextWrapper}>
+                      <h4 className={styles.roleCardTitle}>المتابعة كزائر</h4>
+                      <p className={styles.roleCardDesc}>تصفح المصحف، الأذكار، اتجاه القبلة، وتحديات التعلم مجاناً</p>
+                    </div>
+                  </div>
+
+                  <div 
+                    className={`${styles.roleCard} ${styles.adminCard}`}
                     onClick={() => navigate('/admin-login')}
-                    style={{ textAlign: 'center', justifyContent: 'center' }}
                   >
-                    دخول الإدارة
-                  </button>
+                    <div className={styles.roleIconWrapper}>
+                      <span className={styles.roleIcon}>🛡️</span>
+                    </div>
+                    <div className={styles.roleTextWrapper}>
+                      <h4 className={styles.roleCardTitle}>بوابة الإدارة</h4>
+                      <p className={styles.roleCardDesc}>لوحة تحكم خاصة بالمشرفين لإدارة المستخدمين والتحديات اليومية</p>
+                    </div>
+                  </div>
                 </div>
               </>
 
