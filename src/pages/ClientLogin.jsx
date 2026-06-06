@@ -22,8 +22,7 @@ export default function ClientLogin() {
     } else if (method === 'email') {
       setView('email');
     } else if (method === 'guest') {
-      sessionStorage.setItem('mizan_welcomed', 'true');
-      navigate('/');
+      loginUser({ name: 'زائر', isAdmin: false });
     }
   };
 
