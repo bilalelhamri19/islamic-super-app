@@ -70,33 +70,21 @@ export default function ClientLogin() {
               <>
                 <h3 className={styles.authTitle}>مرحباً بك في تطبيق ميزان</h3>
                 <p className={styles.authSubtitle}>
-                  اختر طريقة الدخول المناسبة لك للمتابعة مجاناً
+                  اضغط على الزر أدناه للمتابعة كزائر والاستمتاع بجميع مميزات التطبيق مجاناً
                 </p>
 
                 <div className={styles.roleSelectionGrid}>
                   <div 
                     className={`${styles.roleCard} ${styles.guestCard}`}
                     onClick={() => handleContinue('guest')}
+                    style={{ padding: '2rem 1.5rem', border: '2px solid #1a6b4a' }}
                   >
-                    <div className={styles.roleIconWrapper}>
-                      <span className={styles.roleIcon}>👤</span>
+                    <div className={styles.roleIconWrapper} style={{ width: '60px', height: '60px', borderRadius: '16px', backgroundColor: '#e8f5e9' }}>
+                      <span className={styles.roleIcon} style={{ fontSize: '1.8rem' }}>👤</span>
                     </div>
                     <div className={styles.roleTextWrapper}>
-                      <h4 className={styles.roleCardTitle}>المتابعة كزائر</h4>
-                      <p className={styles.roleCardDesc}>تصفح المصحف، الأذكار، اتجاه القبلة، وتحديات التعلم مجاناً</p>
-                    </div>
-                  </div>
-
-                  <div 
-                    className={`${styles.roleCard} ${styles.adminCard}`}
-                    onClick={() => navigate('/admin-login')}
-                  >
-                    <div className={styles.roleIconWrapper}>
-                      <span className={styles.roleIcon}>🛡️</span>
-                    </div>
-                    <div className={styles.roleTextWrapper}>
-                      <h4 className={styles.roleCardTitle}>بوابة الإدارة</h4>
-                      <p className={styles.roleCardDesc}>لوحة تحكم خاصة بالمشرفين لإدارة المستخدمين والتحديات اليومية</p>
+                      <h4 className={styles.roleCardTitle} style={{ fontSize: '1.25rem', color: '#1a6b4a' }}>دخول كزائر</h4>
+                      <p className={styles.roleCardDesc} style={{ fontSize: '0.9rem', marginTop: '0.25rem' }}>اضغط هنا للدخول مباشرة وتصفح المصحف الشريف والأذكار وتحديد القبلة</p>
                     </div>
                   </div>
                 </div>
