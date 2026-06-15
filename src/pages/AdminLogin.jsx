@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 import { Button } from '../components/ui/Button';
 import styles from './AdminLogin.module.css';
 
@@ -9,22 +11,33 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Admin-only authentication
-    const isAdmin = email === 'bilalelhamri2006@gmail.com' && password === 'admin123';
+    // --- Fallback: hardcoded admin check (used when Firebase is not configured) ---
+    const ADMIN_EMAIL = 'bilalelhamri2006@gmail.com';
+    const ADMIN_PASS  = 'admin123';
 
-    if (!isAdmin) {
-      setError('Access denied. Only admin accounts can sign in.');
+    if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
+      const userObj = { email, uid: 'local-admin', isAdmin: true };
+      localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
+      window.dispatchEvent(new Event('mizan_stats_updated'));
+      navigate('/admin');
       return;
     }
 
-    const userObj = { email, isAdmin: true };
-    localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-    window.dispatchEvent(new Event('mizan_stats_updated'));
-    navigate('/');
+    // --- Firebase auth (when configured) ---
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userObj = { email: userCredential.user.email, uid: userCredential.user.uid, isAdmin: true };
+      localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
+      window.dispatchEvent(new Event('mizan_stats_updated'));
+      navigate('/admin');
+    } catch (err) {
+      console.error(err);
+      setError('Identifiants invalides. Veuillez vérifier votre email et mot de passe.');
+    }
   };
 
   return (

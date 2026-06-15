@@ -1,71 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Trophy, Star, Target, Zap, ChevronLeft, Check, X } from 'lucide-react';
+import { Trophy, Star, Target, Zap, ChevronRight, Check, X } from 'lucide-react';
 import styles from './Game.module.css';
 
 const QUIZ_QUESTIONS = {
   4: [
     {
       id: 1,
-      question: "Which Prophet is known as Abu al-Anbiya (Father of the Prophets)?",
-      options: ["Prophet Adam (AS)", "Prophet Ibrahim (AS)", "Prophet Nuh (AS)", "Prophet Musa (AS)"],
+      question: "أي نبي يلقب بأبي الأنبياء؟",
+      options: ["آدم عليه السلام", "إبراهيم عليه السلام", "نوح عليه السلام", "موسى عليه السلام"],
       answer: 1
     },
     {
       id: 2,
-      question: "Which Prophet was thrown into a well by his own brothers?",
-      options: ["Prophet Yusuf (AS)", "Prophet Yahya (AS)", "Prophet Yunus (AS)", "Prophet Isa (AS)"],
+      question: "من هو النبي الذي ألقاه إخوته في البئر؟",
+      options: ["يوسف عليه السلام", "يحيى عليه السلام", "يونس عليه السلام", "عيسى عليه السلام"],
       answer: 0
     },
     {
       id: 3,
-      question: "Which Prophet was swallowed by a giant fish/whale and prayed from its belly?",
-      options: ["Prophet Nuh (AS)", "Prophet Yunus (AS)", "Prophet Ayyub (AS)", "Prophet Dawud (AS)"],
+      question: "أي نبي ابتلعه الحوت ودعا ربه من بطنه؟",
+      options: ["نوح عليه السلام", "يونس عليه السلام", "أيوب عليه السلام", "داود عليه السلام"],
       answer: 1
     },
     {
       id: 4,
-      question: "Which Prophet spoke in infancy to defend his mother's purity?",
-      options: ["Prophet Isa (AS)", "Prophet Yahya (AS)", "Prophet Ismail (AS)", "Prophet Sulayman (AS)"],
+      question: "من النبي الذي تكلم في المهد صبياً ليبرئ أمه؟",
+      options: ["عيسى عليه السلام", "يحيى عليه السلام", "إسماعيل عليه السلام", "سليمان عليه السلام"],
       answer: 0
     },
     {
       id: 5,
-      question: "To which Prophet did Allah speak directly, granting him the title Kalimullah?",
-      options: ["Prophet Ibrahim (AS)", "Prophet Musa (AS)", "Prophet Harun (AS)", "Prophet Adam (AS)"],
+      question: "من النبي الذي كلمه الله تكليماً ولقب بـ كليم الله؟",
+      options: ["إبراهيم عليه السلام", "موسى عليه السلام", "هارون عليه السلام", "آدم عليه السلام"],
       answer: 1
     }
   ],
   5: [
     {
       id: 1,
-      question: "In which year of the Elephant (عام الفيل) was Prophet Muhammad (ﷺ) born?",
-      options: ["570 CE", "610 CE", "622 CE", "632 CE"],
+      question: "في أي عام ولد النبي محمد (ﷺ)؟",
+      options: ["عام الفيل", "عام الحزن", "عام الوفود", "عام الخندق"],
       answer: 0
     },
     {
       id: 2,
-      question: "Where did Prophet Muhammad (ﷺ) receive the very first revelation of the Quran?",
-      options: ["Mount Sinai", "Cave of Thawr", "Cave of Hira", "Masjid al-Haram"],
+      question: "أين نزل الوحي أول مرة على النبي محمد (ﷺ)؟",
+      options: ["جبل الطور", "غار ثور", "غار حراء", "المسجد الحرام"],
       answer: 2
     },
     {
       id: 3,
-      question: "What is the name of the Prophet's migration from Mecca to Medina?",
-      options: ["Isra", "Hijrah", "Mi'raj", "Fath Makkah"],
+      question: "ماذا تسمى هجرة النبي من مكة إلى المدينة؟",
+      options: ["الإسراء", "الهجرة النبوية", "المعراج", "فتح مكة"],
       answer: 1
     },
     {
       id: 4,
-      question: "Which battle was the first decisive victory for the early Muslims in Medina?",
-      options: ["Battle of Uhud", "Battle of the Trench", "Battle of Badr", "Battle of Hunayn"],
+      question: "ما هي أول غزوة فاصلة للمسلمين في المدينة؟",
+      options: ["غزوة أحد", "غزوة الخندق", "غزوة بدر", "غزوة حنين"],
       answer: 2
     },
     {
       id: 5,
-      question: "What was the noble character trait for which the Prophet was known in Mecca before his prophethood?",
-      options: ["Al-Amin (The Trustworthy)", "Al-Karim (The Generous)", "Al-Shuja' (The Brave)", "Al-Hakim (The Wise)"],
+      question: "بماذا كان يلقب النبي في مكة قبل النبوة؟",
+      options: ["الصادق الأمين", "الكريم", "الشجاع", "الحكيم"],
       answer: 0
     }
   ]
@@ -81,10 +81,10 @@ const playSound = (type) => {
     
     if (type === 'correct') {
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
       gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
       osc.start();
-      osc.frequency.setValueAtTime(880.00, audioCtx.currentTime + 0.1); // A5
+      osc.frequency.setValueAtTime(880.00, audioCtx.currentTime + 0.1);
       osc.stop(audioCtx.currentTime + 0.3);
     } else if (type === 'wrong') {
       osc.type = 'sawtooth';
@@ -96,38 +96,27 @@ const playSound = (type) => {
     } else if (type === 'victory') {
       osc.type = 'sine';
       const now = audioCtx.currentTime;
-      osc.frequency.setValueAtTime(523.25, now); // C5
+      osc.frequency.setValueAtTime(523.25, now);
       gain.gain.setValueAtTime(0.08, now);
       osc.start();
-      osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
-      osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
-      osc.frequency.setValueAtTime(1046.50, now + 0.36); // C6
+      osc.frequency.setValueAtTime(659.25, now + 0.12);
+      osc.frequency.setValueAtTime(783.99, now + 0.24);
+      osc.frequency.setValueAtTime(1046.50, now + 0.36);
       osc.stop(now + 0.7);
     }
-  } catch (e) {
-    console.error("Audio Synthesis issue", e);
-  }
+  } catch (e) {}
 };
 
 export default function Game() {
   const [userStats, setUserStats] = useState(() => {
     try {
       const saved = localStorage.getItem('mizan_user_stats');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          points: parsed.points !== undefined ? parsed.points : 2450,
-          streak: parsed.streak !== undefined ? parsed.streak : 12,
-          level: parsed.level !== undefined ? parsed.level : 4
-        };
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
     return { points: 2450, streak: 12, level: 4 };
   });
 
-  const [activeLevel, setActiveLevel] = useState(null); // null, 4, 5
+  const [activeLevel, setActiveLevel] = useState(null);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -140,19 +129,15 @@ export default function Game() {
     const handleSync = () => {
       try {
         const saved = localStorage.getItem('mizan_user_stats');
-        if (saved) {
-          setUserStats(JSON.parse(saved));
-        }
-      } catch (e) {
-        console.error(e);
-      }
+        if (saved) setUserStats(JSON.parse(saved));
+      } catch (e) {}
     };
     window.addEventListener('mizan_stats_updated', handleSync);
     return () => window.removeEventListener('mizan_stats_updated', handleSync);
   }, []);
 
   const handleStartQuiz = (level) => {
-    if (level === 5 && userStats.level < 5) return; // locked
+    if (level === 5 && userStats.level < 5) return;
     setActiveLevel(level);
     setCurrentIdx(0);
     setSelectedIdx(null);
@@ -191,45 +176,41 @@ export default function Game() {
       setSelectedIdx(null);
       setSubmitted(false);
     } else {
-      // finish quiz
       setFinished(true);
       const finalScore = score + (selectedIdx === questions[currentIdx].answer ? 1 : 0);
-      const isPass = finalScore >= 4; // 80% to pass
+      const isPass = finalScore >= 4;
 
       if (isPass) {
         playSound('victory');
         setShowConfetti(true);
         
-        // update stats
         try {
           const stats = JSON.parse(localStorage.getItem('mizan_user_stats') || '{}');
           if (!stats.points) stats.points = 2450;
           if (!stats.streak) stats.streak = 12;
           if (!stats.level) stats.level = 4;
           
-          let pointsGained = 150; // default passing points
+          let pointsGained = 150;
           if (activeLevel === 4 && stats.level === 4) {
             stats.level = 5;
-            pointsGained += 250; // extra level unlock bonus
+            pointsGained += 250;
           } else if (activeLevel === 5) {
-            pointsGained += 300; // completion bonus
+            pointsGained += 300;
           }
           
           stats.points += pointsGained;
-          stats.streak += 1; // increase daily streak
+          stats.streak += 1;
           
           localStorage.setItem('mizan_user_stats', JSON.stringify(stats));
           setUserStats(stats);
           window.dispatchEvent(new Event('mizan_stats_updated'));
-        } catch (e) {
-          console.error(e);
-        }
+        } catch (e) {}
       }
     }
   };
 
   const handleResetLevelProgress = () => {
-    if (window.confirm("Do you want to reset all game data and start over?")) {
+    if (window.confirm("هل تريد إعادة تعيين جميع بيانات اللعبة والبدء من جديد؟")) {
       const initial = { points: 2450, streak: 12, level: 4 };
       localStorage.setItem('mizan_user_stats', JSON.stringify(initial));
       setUserStats(initial);
@@ -237,13 +218,12 @@ export default function Game() {
     }
   };
 
-  // Render Quiz View
   if (activeLevel !== null) {
     const questions = QUIZ_QUESTIONS[activeLevel];
     const questionObj = questions[currentIdx];
 
     return (
-      <div className={styles.container} style={{ position: 'relative' }}>
+      <div className={styles.container}>
         {showConfetti && (
           <div className={styles.confettiContainer}>
             {Array.from({ length: 40 }).map((_, i) => (
@@ -263,14 +243,14 @@ export default function Game() {
         )}
 
         <button className={styles.backButton} onClick={() => setActiveLevel(null)}>
-          <ChevronLeft size={20} /> Back to Learning Path
+          <ChevronRight size={20} /> العودة إلى مسار التعلم
         </button>
 
         {!finished ? (
           <Card className={styles.quizCard}>
             <div className={styles.cardHeader}>
               <span className={styles.levelTag}>
-                Question {currentIdx + 1} of {questions.length}
+                السؤال {currentIdx + 1} من {questions.length}
               </span>
               <div className={styles.progressBar}>
                 <div 
@@ -317,19 +297,15 @@ export default function Game() {
               <div>
                 <div className={`${styles.feedbackBox} ${selectedIdx === questionObj.answer ? styles.correctFeedback : styles.incorrectFeedback}`}>
                   {selectedIdx === questionObj.answer ? (
-                    <span>✓ Allahu Akbar! That is correct. (+10 Points)</span>
+                    <span>✓ الله أكبر! إجابة صحيحة. (+10 نقاط)</span>
                   ) : (
-                    <span>✗ Incorrect. The correct answer was "{questionObj.options[questionObj.answer]}".</span>
+                    <span>✗ إجابة خاطئة. الإجابة الصحيحة هي "{questionObj.options[questionObj.answer]}".</span>
                   )}
                 </div>
 
                 <div className="mt-4">
-                  <Button 
-                    variant="primary" 
-                    className="w-full"
-                    onClick={handleNextQuestion}
-                  >
-                    {currentIdx < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                  <Button variant="primary" className="w-full" onClick={handleNextQuestion}>
+                    {currentIdx < questions.length - 1 ? 'السؤال التالي' : 'إنهاء الاختبار'}
                   </Button>
                 </div>
               </div>
@@ -343,7 +319,7 @@ export default function Game() {
                   disabled={selectedIdx === null}
                   onClick={handleSubmitAnswer}
                 >
-                  Submit Answer
+                  تأكيد الإجابة
                 </Button>
               </div>
             )}
@@ -353,9 +329,9 @@ export default function Game() {
             <div className={styles.resultsContainer}>
               <Trophy size={64} className={styles.iconStar} style={{ animation: 'bounce 2s infinite' }} />
               <div>
-                <h3 className="heading-lg">Level {activeLevel} Quiz Completed!</h3>
-                <p className="text-body mt-2">
-                  You scored <strong>{score}</strong> out of <strong>{questions.length}</strong>
+                <h3 className={styles.resultTitle}>تم اجتياز المستوى {activeLevel}!</h3>
+                <p className={styles.resultSub}>
+                  لقد سجلت <strong>{score}</strong> من <strong>{questions.length}</strong>
                 </p>
               </div>
 
@@ -368,45 +344,37 @@ export default function Game() {
                   <div 
                     key={i} 
                     className={`${styles.reviewDot} ${correct ? styles.correct : styles.wrong}`} 
-                    title={`Question ${i+1}`}
+                    title={`السؤال ${i+1}`}
                   />
                 ))}
               </div>
 
               {score >= 4 ? (
-                <div className="text-center">
-                  <p className="font-semibold text-primary" style={{ color: 'var(--primary-emerald)' }}>
-                    MashaAllah! You passed the challenge!
+                <div className={styles.resultMessage}>
+                  <p className={styles.successMsg}>
+                    ما شاء الله! لقد اجتزت التحدي بنجاح!
                   </p>
-                  <p className="text-small text-secondary mt-1">
-                    Bonus points rewarded. Daily streak increased.
+                  <p className={styles.bonusMsg}>
+                    تمت إضافة نقاط المكافأة وازدياد عدد أيام المواظبة.
                   </p>
                 </div>
               ) : (
-                <div className="text-center">
-                  <p className="font-semibold" style={{ color: 'var(--accent-bronze)' }}>
-                    Keep seeking knowledge!
+                <div className={styles.resultMessage}>
+                  <p className={styles.failMsg}>
+                    استمر في طلب العلم!
                   </p>
-                  <p className="text-small text-secondary mt-1">
-                    You need to answer at least 4 questions correctly (80%) to pass.
+                  <p className={styles.bonusMsg}>
+                    تحتاج للإجابة على 4 أسئلة صحيحة على الأقل (80%) لاجتياز التحدي.
                   </p>
                 </div>
               )}
 
-              <div className="w-full flex gap-3 mt-2">
-                <Button 
-                  variant="secondary" 
-                  className="flex-1"
-                  onClick={() => handleStartQuiz(activeLevel)}
-                >
-                  Try Again
+              <div className={styles.resultActions}>
+                <Button variant="secondary" className={styles.actionBtn} onClick={() => handleStartQuiz(activeLevel)}>
+                  إعادة المحاولة
                 </Button>
-                <Button 
-                  variant="primary" 
-                  className="flex-1"
-                  onClick={() => setActiveLevel(null)}
-                >
-                  Continue Path
+                <Button variant="primary" className={styles.actionBtn} onClick={() => setActiveLevel(null)}>
+                  متابعة المسار
                 </Button>
               </div>
             </div>
@@ -416,54 +384,54 @@ export default function Game() {
     );
   }
 
-  // Render Path View
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
+      <div className={styles.pageHeader}>
         <div>
-          <h2 className="heading-lg">Learning Path (مسار العلم)</h2>
-          <p className="text-body">Continue your journey of seeking authentic Islamic knowledge.</p>
+          <p className={styles.pageLabel}>اختبر معلوماتك</p>
+          <h2 className={styles.pageTitle}>مسار العلم</h2>
+          <p className={styles.pageSub}>أكمل رحلتك في طلب العلم الشرعي الموثوق.</p>
         </div>
         <div className={styles.statsRow}>
-          <div className={styles.statBadge} title="Daily streak of reading/learning">
-            <Zap size={18} className={styles.iconFire} />
-            <span>{userStats.streak} Day Streak</span>
+          <div className={styles.statBadge}>
+            <Zap size={16} className={styles.iconFire} />
+            <span>{userStats.streak} أيام مواظبة</span>
           </div>
-          <div className={styles.statBadge} title="Your accumulated seeker points">
-            <Star size={18} className={styles.iconStar} />
-            <span>{userStats.points.toLocaleString()} Points</span>
+          <div className={styles.statBadge}>
+            <Star size={16} className={styles.iconStar} />
+            <span>{userStats.points.toLocaleString()} نقطة</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleResetLevelProgress} title="Reset Game Progress">
-            Reset All
-          </Button>
+          <button className={styles.resetBtn} onClick={handleResetLevelProgress} title="إعادة تعيين التقدم">
+            إعادة تعيين
+          </button>
         </div>
       </div>
 
       <div className={styles.levelPath}>
         
-        {/* Level 4 Node */}
+        {/* Level 4 */}
         <div className={styles.pathNode}>
           <div className={`${styles.nodeCircle} ${styles.activeNode}`}>
             <Star size={24} fill="currentColor" />
           </div>
           <Card className={styles.levelCard}>
-            <div className={styles.cardHeader}>
-              <span className={styles.levelTag}>Level 4</span>
-              <h3 className="heading-md">Prophets of Islam (قصص الأنبياء)</h3>
+            <div className={styles.cardHeaderInfo}>
+              <span className={styles.levelTag}>المستوى 4</span>
+              <h3 className={styles.levelTitle}>قصص الأنبياء</h3>
             </div>
-            <p className="text-small">Learn the stories of the resilient messengers of Allah.</p>
+            <p className={styles.levelDesc}>تعرف على قصص الرسل الكرام وصبرهم.</p>
             <div className={styles.progressContainer}>
               <div className={styles.progressHeader}>
-                <span className="text-small">Progress</span>
-                <span className="text-small">{userStats.level > 4 ? '100%' : '60%'}</span>
+                <span className={styles.progressLabel}>التقدم</span>
+                <span className={styles.progressValue}>{userStats.level > 4 ? '100%' : '60%'}</span>
               </div>
               <div className={styles.progressBar}>
                 <div className={styles.progressFill} style={{ width: userStats.level > 4 ? '100%' : '60%' }}></div>
               </div>
             </div>
             <div className="mt-4">
-              <Button variant="primary" size="sm" className="w-full" onClick={() => handleStartQuiz(4)}>
-                {userStats.level > 4 ? 'Retake Quiz' : 'Take Level Challenge'}
+              <Button variant="primary" className="w-full" onClick={() => handleStartQuiz(4)}>
+                {userStats.level > 4 ? 'إعادة الاختبار' : 'بدء تحدي المستوى'}
               </Button>
             </div>
           </Card>
@@ -471,27 +439,27 @@ export default function Game() {
 
         <div className={styles.connector}></div>
 
-        {/* Level 5 Node */}
+        {/* Level 5 */}
         <div className={styles.pathNode}>
           <div className={`${styles.nodeCircle} ${userStats.level >= 5 ? styles.activeNode : styles.lockedNode}`}>
             {userStats.level >= 5 ? <Trophy size={24} fill="currentColor" /> : <Target size={24} />}
           </div>
-          <Card className={styles.levelCard} variant={userStats.level >= 5 ? 'default' : 'subtle'}>
-            <div className={styles.cardHeader}>
-              <span className={styles.levelTag}>Level 5</span>
-              <h3 className="heading-md">The Final Revelation (السيرة النبوية)</h3>
+          <Card className={`${styles.levelCard} ${userStats.level < 5 ? styles.lockedCard : ''}`}>
+            <div className={styles.cardHeaderInfo}>
+              <span className={styles.levelTag}>المستوى 5</span>
+              <h3 className={styles.levelTitle}>السيرة النبوية</h3>
             </div>
             {userStats.level >= 5 ? (
               <>
-                <p className="text-small">Learn about the Seerah and the character of Prophet Muhammad (ﷺ).</p>
+                <p className={styles.levelDesc}>تعرف على سيرة وشمائل النبي محمد (ﷺ).</p>
                 <div className="mt-4">
-                  <Button variant="primary" size="sm" className="w-full" onClick={() => handleStartQuiz(5)}>
-                    Take Level Challenge
+                  <Button variant="primary" className="w-full" onClick={() => handleStartQuiz(5)}>
+                    بدء تحدي المستوى
                   </Button>
                 </div>
               </>
             ) : (
-              <p className="text-small">Locked. Complete the Level 4 Prophets challenge with 80% score to unlock.</p>
+              <p className={styles.lockedDesc}>مغلق. يجب إكمال المستوى 4 (قصص الأنبياء) بنسبة 80% على الأقل لفتحه.</p>
             )}
           </Card>
         </div>

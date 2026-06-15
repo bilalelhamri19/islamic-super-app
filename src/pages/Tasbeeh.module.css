@@ -1,0 +1,307 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  direction: rtl;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  background: var(--white);
+  padding: var(--spacing-5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.pageLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-sage);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-charcoal);
+  margin-bottom: 0.25rem;
+}
+
+.pageSub {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+}
+
+.statsBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--secondary-ivory);
+  padding: 10px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  font-weight: 700;
+  color: var(--text-charcoal);
+  font-size: 0.9rem;
+}
+
+.iconGold {
+  color: var(--accent-gold);
+}
+
+.iconEmerald {
+  color: var(--primary-emerald);
+}
+
+/* ── Main Layout ── */
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+  .mainLayout {
+    grid-template-columns: 300px 1fr;
+  }
+}
+
+/* ── Control Panel ── */
+.controlPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.selectorCard {
+  background: var(--white);
+  padding: var(--spacing-5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.selectorLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-charcoal);
+}
+
+.zikrSelect {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-light);
+  background: var(--secondary-sand);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-charcoal);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.zikrSelect:focus {
+  border-color: var(--primary-emerald);
+  background: var(--white);
+}
+
+.targetInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--spacing-2);
+  color: var(--primary-emerald);
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: #ECFDF5;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+}
+
+.infoCard {
+  background: var(--white);
+  padding: var(--spacing-5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.infoTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-3);
+  color: var(--text-charcoal);
+}
+
+.infoDesc {
+  font-size: 0.85rem;
+  color: var(--text-slate);
+  line-height: 1.7;
+}
+
+/* ── Counter Section ── */
+.counterSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.counterCircleWrap {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin-bottom: var(--spacing-6);
+}
+
+/* SVG Progress */
+.progressSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progressBg {
+  fill: none;
+  stroke: var(--secondary-ivory);
+  stroke-width: 6;
+}
+
+.progressValue {
+  fill: none;
+  stroke: var(--primary-emerald);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease, stroke 0.3s ease;
+}
+
+.progressCompleted {
+  stroke: var(--accent-gold);
+}
+
+/* Tap Area */
+.tapArea {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  background: radial-gradient(circle at center, var(--white) 0%, var(--secondary-ivory) 100%);
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05), inset 0 2px 5px rgba(255,255,255,1);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tapArea:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05), inset 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.tapAreaDone {
+  background: radial-gradient(circle at center, #FFFBEB 0%, #FEF3C7 100%);
+  cursor: default;
+}
+
+.countNumber {
+  font-size: 5rem;
+  font-weight: 800;
+  color: var(--text-charcoal);
+  line-height: 1;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.countLabel {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-gray);
+}
+
+.tapAreaDone .countLabel {
+  color: #D97706;
+}
+
+/* Actions */
+.counterActions {
+  display: flex;
+  gap: var(--spacing-4);
+}
+
+.resetBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  border: 1.5px solid var(--border-light);
+  color: var(--text-slate);
+  padding: 10px 20px;
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.resetBtn:hover {
+  border-color: var(--text-slate);
+  background: var(--secondary-sand);
+}
+
+.nextBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-emerald);
+  border: none;
+  color: var(--white);
+  padding: 10px 24px;
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  box-shadow: 0 4px 12px rgba(15, 92, 77, 0.2);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.nextBtn:hover {
+  background: #0d4a33;
+  transform: translateY(-2px);
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}

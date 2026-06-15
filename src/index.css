@@ -1,33 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Primary Colors */
-  --primary-emerald: #0F5C4D;
-  --primary-green: #136F63;
-  --primary-sage: #7FAF9A;
+  /* ── Modern Royal Blue Islamic Theme Tokens ── */
+  --primary-emerald: #1E40AF;
+  --primary-green: #1E40AF;
+  --primary-sage: #60A5FA;
 
   /* Secondary Colors */
-  --secondary-ivory: #F8F5EF;
-  --secondary-sand: #E8DDC8;
-  --secondary-stone: #D9D4CC;
+  --secondary-ivory: #F8FAFC;
+  --secondary-sand: #EFF6FF;
+  --secondary-stone: #CBD5E1;
 
   /* Accent Colors */
-  --accent-gold: #C8A96B;
+  --accent-gold: #D97706;
   --accent-bronze: #A8844F;
 
   /* Text Colors */
-  --text-charcoal: #1F2937;
-  --text-slate: #4B5563;
-  --text-gray: #6B7280;
+  --text-charcoal: #0F172A;
+  --text-slate: #334155;
+  --text-gray: #64748B;
   
   /* System */
   --white: #FFFFFF;
-  --border-light: #EFEBE4;
+  --border-light: #E2E8F0;
 
   /* Legacy Mappings for CSS Modules */
   --primary: var(--primary-emerald);
-  --primary-light: #E6F0EE;
-  --primary-dark: #0B4A3E;
+  --primary-light: #E0E7FF;
+  --primary-dark: #1E3A8A;
   --gold: var(--accent-gold);
   --border: var(--border-light);
   --text-primary: var(--text-charcoal);
@@ -56,7 +56,8 @@
 
   /* Fonts */
   --font-latin: 'Inter', sans-serif;
-  --font-arabic: 'Amiri', serif;
+  --font-arabic: 'Noto Naskh Arabic', 'Amiri', serif;
+  --font-body: var(--font-latin);
 }
 
 [data-theme='dark'] {
@@ -78,13 +79,19 @@
 }
 
 body {
-  font-family: var(--font-latin);
+  font-family: var(--font-body);
   background-color: var(--secondary-ivory);
   color: var(--text-charcoal);
   line-height: 1.6;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
+}
+
+/* RTL: switch body font to Arabic */
+:root:lang(ar) body,
+[dir='rtl'] body {
+  font-family: var(--font-arabic);
 }
 
 /* Typography Utility Classes */
@@ -145,3 +152,18 @@ button {
   cursor: pointer;
   font: inherit;
 }
+
+/* Animation Utility */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.text-xs { font-size: 0.75rem; }
+.opacity-75 { opacity: 0.75; }

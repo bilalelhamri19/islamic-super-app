@@ -1,110 +1,84 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Navigation, MapPin } from 'lucide-react';
+import { Navigation, MapPin, RefreshCw } from 'lucide-react';
 import styles from './Qibla.module.css';
 
 const CITIES = [
-  { name: 'Casablanca (الدار البيضاء)', lat: 33.5731, lng: -7.5898 },
-  { name: 'Rabat (الرباط)', lat: 34.0209, lng: -6.8416 },
-  { name: 'Marrakech (مراكش)', lat: 31.6295, lng: -7.9811 },
-  { name: 'Fes (فاس)', lat: 34.0181, lng: -5.0078 },
-  { name: 'Tangier (طنجة)', lat: 35.7595, lng: -5.8340 },
-  { name: 'Agadir (أكادير)', lat: 30.4278, lng: -9.5981 },
-  { name: 'Oujda (وجدة)', lat: 34.6867, lng: -1.9114 },
-  { name: 'Mecca (مكة المكرمة)', lat: 21.4225, lng: 39.8262 },
-  { name: 'Medina (المدينة المنورة)', lat: 24.4672, lng: 39.6111 },
-  { name: 'Cairo (القاهرة)', lat: 30.0444, lng: 31.2357 },
-  { name: 'Riyadh (الرياض)', lat: 24.7136, lng: 46.6753 },
-  { name: 'London (لندن)', lat: 51.5074, lng: -0.1278 },
-  { name: 'Paris (باريس)', lat: 48.8566, lng: 2.3522 },
-  { name: 'New York (نيويورك)', lat: 40.7128, lng: -74.0060 },
-  { name: 'Jakarta (جاكرتا)', lat: -6.2088, lng: 106.8456 }
+  { name: 'الدار البيضاء', lat: 33.5731, lng: -7.5898 },
+  { name: 'الرباط', lat: 34.0209, lng: -6.8416 },
+  { name: 'مراكش', lat: 31.6295, lng: -7.9811 },
+  { name: 'فاس', lat: 34.0181, lng: -5.0078 },
+  { name: 'طنجة', lat: 35.7595, lng: -5.8340 },
+  { name: 'أكادير', lat: 30.4278, lng: -9.5981 },
+  { name: 'وجدة', lat: 34.6867, lng: -1.9114 },
+  { name: 'مكة المكرمة', lat: 21.4225, lng: 39.8262 },
+  { name: 'المدينة المنورة', lat: 24.4672, lng: 39.6111 },
+  { name: 'القاهرة', lat: 30.0444, lng: 31.2357 },
+  { name: 'الرياض', lat: 24.7136, lng: 46.6753 },
+  { name: 'لندن', lat: 51.5074, lng: -0.1278 },
+  { name: 'باريس', lat: 48.8566, lng: 2.3522 },
+  { name: 'نيويورك', lat: 40.7128, lng: -74.0060 },
 ];
 
 function getQiblaBearing(lat, lng) {
   const phi1 = lat * Math.PI / 180;
-  const phi2 = 21.422487 * Math.PI / 180; // Kaaba Latitude
-  const deltaLambda = (39.826206 - lng) * Math.PI / 180; // Kaaba Longitude - user Longitude
-  
+  const phi2 = 21.422487 * Math.PI / 180;
+  const deltaLambda = (39.826206 - lng) * Math.PI / 180;
   const y = Math.sin(deltaLambda);
   const x = Math.cos(phi1) * Math.tan(phi2) - Math.sin(phi1) * Math.cos(deltaLambda);
-  
-  let qiblaRad = Math.atan2(y, x);
-  let qiblaDeg = qiblaRad * 180 / Math.PI;
+  let qiblaDeg = Math.atan2(y, x) * 180 / Math.PI;
   return (qiblaDeg + 360) % 360;
 }
 
 export default function Qibla() {
   const [heading, setHeading] = useState(0);
-  const [qiblaDirection, setQiblaDirection] = useState(110.1); // default to Casablanca
+  const [qiblaDirection, setQiblaDirection] = useState(110.1);
   const [isCalibrating, setIsCalibrating] = useState(true);
-  const [locationName, setLocationName] = useState('Casablanca (Default)');
+  const [locationName, setLocationName] = useState('الدار البيضاء');
   const [selectedCityIdx, setSelectedCityIdx] = useState(0);
-  const [gpsError, setGpsError] = useState(null);
+  const [gpsStatus, setGpsStatus] = useState('loading'); // 'loading' | 'granted' | 'denied'
 
-  // Geolocation effect
   useEffect(() => {
-    if ("geolocation" in navigator) {
+    if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           const bearing = getQiblaBearing(latitude, longitude);
           setQiblaDirection(Math.round(bearing * 10) / 10);
-          setLocationName(`Current Location (${Math.round(latitude * 100) / 100}°, ${Math.round(longitude * 100) / 100}°)`);
-          setGpsError(null);
+          setLocationName(`موقعك الحالي (${Math.round(latitude * 100) / 100}°، ${Math.round(longitude * 100) / 100}°)`);
+          setGpsStatus('granted');
           setIsCalibrating(false);
         },
-        (error) => {
-          console.warn("GPS Access denied or failed, falling back to Casa", error);
-          setGpsError("GPS denied/unavailable. Using City selection.");
+        () => {
+          setGpsStatus('denied');
           setIsCalibrating(false);
-          // default Casablanca
           const bearing = getQiblaBearing(33.5731, -7.5898);
           setQiblaDirection(Math.round(bearing * 10) / 10);
-          setLocationName('Casablanca');
+          setLocationName('الدار البيضاء (افتراضي)');
         }
       );
     } else {
-      setGpsError("Geolocation not supported by browser.");
+      setGpsStatus('denied');
       setIsCalibrating(false);
     }
   }, []);
 
-  // Device orientation / compass sensor effect
   useEffect(() => {
     const handleOrientation = (e) => {
-      let headingAngle = 0;
-      if (e.webkitCompassHeading !== undefined) {
-        headingAngle = e.webkitCompassHeading;
-      } else if (e.alpha !== null) {
-        headingAngle = 360 - e.alpha;
-      }
-      setHeading(Math.round(headingAngle));
+      let angle = e.webkitCompassHeading !== undefined ? e.webkitCompassHeading : (360 - (e.alpha || 0));
+      setHeading(Math.round(angle));
     };
-
-    const setupCompass = async () => {
-      if (typeof DeviceOrientationEvent !== 'undefined' && 
-          typeof DeviceOrientationEvent.requestPermission === 'function') {
+    const setup = async () => {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         try {
-          const permission = await DeviceOrientationEvent.requestPermission();
-          if (permission === 'granted') {
-            window.addEventListener('deviceorientation', handleOrientation, true);
-          }
-        } catch (err) {
-          console.error("Device orientation permission error", err);
-        }
+          const perm = await DeviceOrientationEvent.requestPermission();
+          if (perm === 'granted') window.addEventListener('deviceorientation', handleOrientation, true);
+        } catch (e) {}
       } else {
-        if ('ondeviceorientationabsolute' in window) {
-          window.addEventListener('deviceorientationabsolute', handleOrientation, true);
-        } else {
-          window.addEventListener('deviceorientation', handleOrientation, true);
-        }
+        window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', handleOrientation, true);
       }
     };
-
-    setupCompass();
-
+    setup();
     return () => {
       window.removeEventListener('deviceorientation', handleOrientation, true);
       window.removeEventListener('deviceorientationabsolute', handleOrientation, true);
@@ -115,100 +89,120 @@ export default function Qibla() {
     const idx = parseInt(e.target.value, 10);
     setSelectedCityIdx(idx);
     const city = CITIES[idx];
-    const bearing = getQiblaBearing(city.lat, city.lng);
-    setQiblaDirection(Math.round(bearing * 10) / 10);
+    setQiblaDirection(Math.round(getQiblaBearing(city.lat, city.lng) * 10) / 10);
     setLocationName(city.name);
   };
 
-  const handleManualRotate = () => {
-    // Simulate user rotating phone / turning
-    setHeading(prev => (prev + 30) % 360);
-  };
-
-  // Needle rotates to point towards Kaaba (Qibla Direction - Phone Heading)
   const needleRotation = qiblaDirection - heading;
-
-  // Check if phone is aligned to Qibla (tolerance of +/- 5 degrees)
   const diff = Math.abs((heading - qiblaDirection + 180) % 360 - 180);
   const isAligned = diff <= 5;
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className="heading-lg">Qibla Finder (اتجاه القبلة)</h2>
-        <p className="text-body">Find the direction of the Kaaba from your current location using GPS or compass.</p>
+
+      {/* Header */}
+      <div className={styles.pageHeader}>
+        <div>
+          <p className={styles.pageLabel}>اتجاه الصلاة</p>
+          <h2 className={styles.pageTitle}>اتجاه القبلة</h2>
+          <p className={styles.pageSub}>وجّه نفسك نحو الكعبة المشرفة أينما كنت</p>
+        </div>
       </div>
 
-      <div className={styles.compassContainer}>
-        <div className={`${styles.compassWrapper} ${isAligned ? styles.alignedCompass : ''}`}>
-          <div className={styles.compassRing}></div>
-          <div className={styles.cardinalPoints}>
-            <span className={`${styles.point} ${styles.n}`}>N</span>
-            <span className={`${styles.point} ${styles.s}`}>S</span>
-            <span className={`${styles.point} ${styles.e}`}>E</span>
-            <span className={`${styles.point} ${styles.w}`}>W</span>
+      {/* Main Layout */}
+      <div className={styles.mainLayout}>
+
+        {/* Compass */}
+        <div className={styles.compassSection}>
+          <div className={`${styles.compassWrapper} ${isAligned ? styles.alignedCompass : ''}`}>
+            {/* Outer glow ring */}
+            <div className={`${styles.glowRing} ${isAligned ? styles.glowAligned : ''}`} />
+
+            {/* Cardinal labels */}
+            <div className={styles.cardinalPoints}>
+              <span className={`${styles.point} ${styles.n}`}>ش</span>
+              <span className={`${styles.point} ${styles.s}`}>ج</span>
+              <span className={`${styles.point} ${styles.e}`}>ق</span>
+              <span className={`${styles.point} ${styles.w}`}>غ</span>
+            </div>
+
+            {/* Needle */}
+            <div
+              className={`${styles.needle} ${isAligned ? styles.needleAligned : ''}`}
+              style={{ transform: `rotate(${isCalibrating ? 0 : needleRotation}deg)`, transition: 'transform 0.4s ease' }}
+            >
+              <div className={styles.kaabaPointer}>
+                <Navigation size={28} fill="currentColor" />
+                <span className={styles.kaabaLabel}>الكعبة</span>
+              </div>
+            </div>
+
+            <div className={styles.compassCenter} />
           </div>
 
-          <div 
-            className={`${styles.needle} ${isAligned ? styles.alignedNeedle : ''}`} 
-            style={{ transform: `rotate(${isCalibrating ? 0 : needleRotation}deg)` }}
-          >
-            <div className={styles.kaabaPointer}>
-              <Navigation size={24} fill="currentColor" />
-            </div>
-          </div>
-          <div className={styles.needleCenter}></div>
-        </div>
-
-        <Card className={styles.infoCard}>
-          {isCalibrating ? (
-            <div className="py-4">
-              <p className="text-primary font-semibold animate-pulse">Calibrating compass...</p>
-              <p className="text-small mt-2 text-secondary">Awaiting sensor data & geolocation...</p>
-            </div>
-          ) : (
-            <div>
-              <div className={styles.degreeBox}>
-                {qiblaDirection}°
-              </div>
-              <p className={styles.locationText}>
-                <MapPin size={16} className="inline mr-1" style={{ verticalAlign: 'middle', color: 'var(--accent-gold)' }} />
-                Location: <strong>{locationName}</strong>
-              </p>
-
-              {isAligned ? (
-                <div className={styles.alignmentAlert}>
-                  ✓ Aligned with Kaaba! (محاذاة مع الكعبة)
-                </div>
-              ) : (
-                <div className="text-small text-secondary mt-1">
-                  Rotate your device to align with the arrow.
-                </div>
-              )}
-
-              {/* City selector fallback */}
-              <div className={styles.citySelectorWrapper}>
-                <label htmlFor="city-select" className="text-small font-semibold">Select Location Manually:</label>
-                <select 
-                  id="city-select" 
-                  className={styles.citySelect} 
-                  value={selectedCityIdx}
-                  onChange={handleCityChange}
-                >
-                  {CITIES.map((city, idx) => (
-                    <option key={idx} value={idx}>{city.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mt-4">
-                <Button onClick={handleManualRotate} variant="secondary" className="w-full">
-                  Rotate Compass (Simulate Turning)
-                </Button>
-              </div>
+          {isAligned && (
+            <div className={styles.alignedBadge}>
+              ✓ أنت متوجه نحو القبلة!
             </div>
           )}
-        </Card>
+        </div>
+
+        {/* Info Panel */}
+        <div className={styles.infoPanel}>
+
+          {/* Direction Display */}
+          <div className={styles.directionCard}>
+            <p className={styles.directionLabel}>اتجاه القبلة</p>
+            <p className={styles.directionValue}>{isCalibrating ? '---' : `${qiblaDirection}°`}</p>
+          </div>
+
+          {/* GPS Status */}
+          <div className={`${styles.statusCard} ${gpsStatus === 'granted' ? styles.statusGranted : styles.statusDenied}`}>
+            <MapPin size={15} />
+            <div>
+              <p className={styles.statusTitle}>{gpsStatus === 'granted' ? 'GPS مفعّل' : 'GPS غير متاح'}</p>
+              <p className={styles.statusSub}>{locationName}</p>
+            </div>
+          </div>
+
+          {/* City Selector */}
+          <div className={styles.selectorCard}>
+            <label htmlFor="city-select" className={styles.selectorLabel}>
+              اختر مدينة يدوياً
+            </label>
+            <select
+              id="city-select"
+              className={styles.citySelect}
+              value={selectedCityIdx}
+              onChange={handleCityChange}
+            >
+              {CITIES.map((city, idx) => (
+                <option key={idx} value={idx}>{city.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Heading Info */}
+          <div className={styles.headingCard}>
+            <div className={styles.headingRow}>
+              <span className={styles.headingLabel}>اتجاه جهازك</span>
+              <span className={styles.headingValue}>{heading}°</span>
+            </div>
+            <div className={styles.headingRow}>
+              <span className={styles.headingLabel}>الفرق</span>
+              <span className={`${styles.headingValue} ${isAligned ? styles.alignedText : ''}`}>
+                {isCalibrating ? '---' : `${Math.round(diff)}°`}
+              </span>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className={styles.instructionBox}>
+            <p className={styles.instructionText}>
+              📱 وجّه هاتفك حتى يشير السهم نحو الأعلى — عندها ستكون متوجهاً نحو الكعبة المشرفة.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

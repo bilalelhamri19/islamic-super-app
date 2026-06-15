@@ -1,0 +1,36 @@
+{
+  "app": {
+    "name": "Mizan",
+    "home": "Home",
+    "quran": "Quran",
+    "learning": "Learning",
+    "admin": "Admin",
+    "login": "Login",
+    "logout": "Logout",
+    "greeting": "As-salamu alaykum,",
+    "guest": "Guest",
+    "seeker": "Seeker",
+    "level": "Level",
+    "dark_mode": "Switch to Dark Mode",
+    "light_mode": "Switch to Light Mode"
+  },
+  "home": {
+    "next_prayer": "Next Prayer",
+    "fetching_location": "Fetching location...",
+    "calibrating": "Calibrating...",
+    "verse_of_day": "Verse of the Day",
+    "hadith_of_day": "Hadith of the Day",
+    "daily_challenge": "Daily Challenge",
+    "read_ayahs": "Read {{count}} Ayahs",
+    "completed": "completed",
+    "continue_reading": "Continue Reading",
+    "daily_adhkar": "Daily Adhkar",
+    "qibla_finder": "Qibla Finder",
+    "resume": "Resume",
+    "now_reciting": "Now Reciting...",
+    "play": "Play",
+    "pause": "Pause",
+    "surah": "Surah",
+    "verse": "Verse"
+  }
+}

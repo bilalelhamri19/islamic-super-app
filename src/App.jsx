@@ -9,6 +9,8 @@ import ClientLogin from './pages/ClientLogin';
 import AdminLogin from './pages/AdminLogin';
 import Adhkar from './pages/Adhkar';
 import Qibla from './pages/Qibla';
+import Names from './pages/Names';
+import Tasbeeh from './pages/Tasbeeh';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
           <Route path="admin" element={<Admin />} />
           <Route path="adhkar" element={<Adhkar />} />
           <Route path="qibla" element={<Qibla />} />
+          <Route path="names" element={<Names />} />
+          <Route path="tasbeeh" element={<Tasbeeh />} />
         </Route>
 
         {/* Fallback */}

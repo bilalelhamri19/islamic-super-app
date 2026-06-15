@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Trophy, Settings, Lock, LogIn, LogOut } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Home, BookOpen, Trophy, Settings, LogIn, LogOut, Sun, Moon, Languages, Heart, ScrollText } from 'lucide-react';
 import styles from './AppLayout.module.css';
 
 export function AppLayout() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem('mizan_auth_user');
@@ -26,7 +29,19 @@ export function AppLayout() {
     return { level: 4, points: 2450 };
   });
 
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('mizan_theme') === 'dark';
+  });
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('mizan_theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('mizan_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   useEffect(() => {
     const handleSync = () => {
@@ -41,6 +56,11 @@ export function AppLayout() {
     window.addEventListener('mizan_stats_updated', handleSync);
     return () => window.removeEventListener('mizan_stats_updated', handleSync);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dir = i18n.dir();
+    document.documentElement.lang = i18n.language;
+  }, [i18n, i18n.language]);
 
   // Listen for user changes (after login/logout)
   useEffect(() => {
@@ -57,10 +77,12 @@ export function AppLayout() {
   }, []);
 
   const allNavItems = [
-    { name: 'Home', path: '/', icon: <Home size={22} /> },
-    { name: 'Quran', path: '/quran', icon: <BookOpen size={22} /> },
-    { name: 'Learning', path: '/game', icon: <Trophy size={22} /> },
-    { name: 'Admin', path: '/admin', icon: <Settings size={22} />, adminOnly: true },
+    { name: t('app.home') || 'الرئيسية', path: '/', icon: <Home size={22} /> },
+    { name: t('app.quran') || 'القرآن', path: '/quran', icon: <BookOpen size={22} /> },
+    { name: 'أسماء الله الحسنى', path: '/names', icon: <ScrollText size={22} /> },
+    { name: 'المسبحة', path: '/tasbeeh', icon: <Heart size={22} /> },
+    { name: t('app.learning') || 'مسار العلم', path: '/game', icon: <Trophy size={22} /> },
+    { name: t('app.admin') || 'الإدارة', path: '/admin', icon: <Settings size={22} />, adminOnly: true },
   ];
 
   const navItems = allNavItems.filter(item => !item.adminOnly || user?.isAdmin);
@@ -77,7 +99,7 @@ export function AppLayout() {
         <div className={styles.logoContainer}>
           <div className={styles.logo}>
             <span className={styles.logoMark}></span>
-            <h1 className={styles.logoText}>Mizan</h1>
+            <h1 className={styles.logoText}>{t('app.name')}</h1>
           </div>
         </div>
 
@@ -102,25 +124,25 @@ export function AppLayout() {
               {user?.isAdmin ? 'A' : user?.name ? user.name.charAt(0).toUpperCase() : '☪'}
             </div>
             <div className={styles.userInfo}>
-              <span className={styles.userName}>{user?.isAdmin ? 'Admin' : user?.name || 'Visitor'}</span>
-              <span className={styles.userStatus}>Level {stats.level} Seeker</span>
+              <span className={styles.userName}>{user?.isAdmin ? t('app.admin') : user?.name || t('app.guest')}</span>
+              <span className={styles.userStatus}>{t('app.level')} {stats.level} {t('app.seeker')}</span>
             </div>
           </div>
 
           {user ? (
-            <button className={styles.logoutBtn} onClick={handleLogout} title="Logout">
+            <button className={styles.logoutBtn} onClick={handleLogout} title={t('app.logout')}>
               <LogOut size={16} />
-              تسجيل الخروج
+              {t('app.logout')}
             </button>
           ) : (
             <button
               className={styles.logoutBtn}
               onClick={() => navigate('/login')}
-              title="Login"
+              title={t('app.login')}
               style={{ background: '#1a6b4a', color: 'white', border: 'none' }}
             >
               <LogIn size={16} />
-              تسجيل الدخول
+              {t('app.login')}
             </button>
           )}
         </div>
@@ -130,8 +152,28 @@ export function AppLayout() {
       <main className={styles.mainContent}>
         <div className={styles.header}>
           <div className={styles.welcome}>
-            <p className="text-small">As-salamu alaykum,</p>
-            <h2 className="heading-md">{user?.isAdmin ? 'Admin' : user?.name || 'Guest'}</h2>
+            <p className="text-small">{t('app.greeting')}</p>
+            <h2 className="heading-md">{user?.isAdmin ? t('app.admin') : user?.name || t('app.guest')}</h2>
+          </div>
+          <div className={styles.actions}>
+            <button 
+              className={styles.themeToggle} 
+              onClick={() => {
+                const newLang = i18n.language.startsWith('ar') ? 'en' : 'ar';
+                i18n.changeLanguage(newLang);
+                document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
+              }}
+              title="Switch Language"
+            >
+              <Languages size={20} />
+            </button>
+            <button 
+              className={styles.themeToggle} 
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              title={isDarkMode ? t('app.light_mode') : t('app.dark_mode')}
+            >
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </div>
         </div>
         <div className={styles.pageContent}>

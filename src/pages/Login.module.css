@@ -1,0 +1,196 @@
+.loginContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-ivory);
+  padding: var(--spacing-4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background pattern/gradient */
+.loginContainer::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(15, 92, 77, 0.05) 0%, transparent 60%);
+  border-radius: var(--radius-full);
+}
+
+.loginContainer::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(200, 169, 107, 0.08) 0%, transparent 60%);
+  border-radius: var(--radius-full);
+}
+
+.authCard {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-8);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
+  position: relative;
+  z-index: 10;
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.brandContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
+  justify-content: center;
+}
+
+.logoMark {
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary-emerald);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.logoMark::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background-color: var(--accent-gold);
+  border-top-left-radius: 24px;
+}
+
+.logoText {
+  font-family: var(--font-latin);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-emerald);
+  letter-spacing: -0.02em;
+}
+
+.welcomeSection {
+  text-align: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.welcomeSection h2 {
+  font-family: var(--font-arabic);
+  font-size: 2.2rem;
+  color: var(--primary-emerald);
+  margin-bottom: var(--spacing-2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
+.errorBox {
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  background-color: #FEF2F2;
+  color: #991B1B;
+  border-left: 4px solid #EF4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: shakeIn 0.3s ease-out;
+}
+
+@keyframes shakeIn {
+  0% { transform: translateX(-8px); opacity: 0; }
+  50% { transform: translateX(4px); }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-charcoal);
+}
+
+.passwordHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgotLink {
+  font-size: 0.8125rem;
+  color: var(--primary-emerald);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgotLink:hover {
+  color: var(--primary-green);
+  text-decoration: underline;
+}
+
+.input {
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background-color: var(--secondary-ivory);
+  color: var(--text-charcoal);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+[data-theme='dark'] .input {
+  background-color: rgba(0,0,0,0.2);
+}
+
+.input:focus {
+  border-color: var(--primary-emerald);
+  box-shadow: 0 0 0 3px rgba(15, 92, 77, 0.1);
+  background-color: var(--white);
+}
+
+.submitBtn {
+  margin-top: var(--spacing-2);
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.125rem;
+}
+
+.footer {
+  margin-top: var(--spacing-6);
+  text-align: center;
+}
+
+.registerLink {
+  color: var(--primary-emerald);
+  font-weight: 600;
+  margin-left: var(--spacing-1);
+}
+
+.registerLink:hover {
+  text-decoration: underline;
+}

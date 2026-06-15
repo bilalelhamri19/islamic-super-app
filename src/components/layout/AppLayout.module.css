@@ -6,14 +6,16 @@
 
 .sidebar {
   width: 280px;
-  background: linear-gradient(135deg, var(--primary-emerald), var(--accent-gold));
+  background: linear-gradient(160deg, #0F5C4D 0%, #0d4a33 60%, #1a7b5c 100%);
   color: #ffffff;
-  border-right: none;
   display: flex;
   flex-direction: column;
   position: fixed;
-  height: 100vh;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 0;
   z-index: 10;
+  overflow-y: auto;
 }
 
 .logoContainer {
@@ -39,11 +41,11 @@
   content: '';
   position: absolute;
   bottom: 0;
-  right: 0;
+  inset-inline-end: 0;
   width: 20px;
   height: 20px;
   background-color: var(--accent-gold);
-  border-top-left-radius: 20px;
+  border-start-start-radius: 20px;
 }
 
 .logoutBtn {
@@ -116,26 +118,32 @@
   align-items: center;
   padding: var(--spacing-3) var(--spacing-4);
   border-radius: var(--radius-lg);
-  color: var(--text-slate);
+  color: rgba(255, 255, 255, 0.8);
   transition: all 0.2s ease;
   font-weight: 500;
 }
 
 .navItem:hover {
-  background-color: var(--secondary-ivory);
-  color: var(--primary-emerald);
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 .navItem.active {
-  background-color: var(--primary-emerald);
+  background-color: rgba(255, 255, 255, 0.22);
   color: #ffffff;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .icon {
-  margin-right: var(--spacing-3);
+  margin-inline-end: var(--spacing-3);
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+}
+
+.navText {
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .bottomSection {
@@ -192,9 +200,11 @@
 /* Main Content Area */
 .mainContent {
   flex: 1;
-  margin-left: 280px; /* offset sidebar */
+  margin-inline-start: 280px; /* offset sidebar */
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--secondary-ivory);
 }
 
 .header {
@@ -255,7 +265,7 @@
   }
 
   .mainContent {
-    margin-left: 0;
+    margin-inline-start: 0;
     padding-bottom: 80px; /* space for bottom nav */
   }
 
@@ -273,8 +283,8 @@
     align-items: center;
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     height: 70px;
     background-color: var(--white);
     border-top: 1px solid var(--border-light);

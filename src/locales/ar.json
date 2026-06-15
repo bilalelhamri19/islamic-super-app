@@ -1,0 +1,36 @@
+{
+  "app": {
+    "name": "ميزان",
+    "home": "الرئيسية",
+    "quran": "القرآن الكريم",
+    "learning": "التعلم",
+    "admin": "الإدارة",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "greeting": "السلام عليكم،",
+    "guest": "زائر",
+    "seeker": "طالب علم",
+    "level": "مستوى",
+    "dark_mode": "تفعيل الوضع الليلي",
+    "light_mode": "تفعيل الوضع الفاتح"
+  },
+  "home": {
+    "next_prayer": "الصلاة القادمة",
+    "fetching_location": "جاري تحديد الموقع...",
+    "calibrating": "جاري الحساب...",
+    "verse_of_day": "آية اليوم",
+    "hadith_of_day": "حديث اليوم",
+    "daily_challenge": "التحدي اليومي",
+    "read_ayahs": "قراءة {{count}} آيات",
+    "completed": "مكتمل",
+    "continue_reading": "متابعة القراءة",
+    "daily_adhkar": "أذكار اليوم",
+    "qibla_finder": "اتجاه القبلة",
+    "resume": "متابعة",
+    "now_reciting": "يتم التلاوة الآن...",
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "surah": "سورة",
+    "verse": "آية"
+  }
+}

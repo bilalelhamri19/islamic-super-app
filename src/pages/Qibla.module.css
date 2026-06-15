@@ -1,172 +1,347 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding-bottom: 2rem;
-  animation: fadeIn 0.4s ease-out;
+  gap: var(--spacing-5);
+  direction: rtl;
+  max-width: 780px;
+  margin: 0 auto;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.header {
-  margin-bottom: 2rem;
+/* ── Header ── */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
 }
 
-.compassContainer {
-  flex: 1;
+.pageLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-sage);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-charcoal);
+  letter-spacing: -0.02em;
+}
+
+.pageSub {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  margin-top: 0.25rem;
+}
+
+/* ── Main Layout ── */
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-3);
+}
+
+@media (min-width: 768px) {
+  .mainLayout {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
+/* ── Compass Section ── */
+.compassSection {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2rem;
+  gap: var(--spacing-4);
+  background: var(--white);
+  padding: var(--spacing-6) var(--spacing-4);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .compassWrapper {
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: 260px;
+  height: 260px;
   border-radius: 50%;
-  background: var(--surface-1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), inset 0 0 20px rgba(10, 89, 74, 0.05);
+  background: var(--secondary-ivory);
+  border: 4px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 4px solid var(--surface-2);
+  box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.05), var(--shadow-md);
+  transition: all 0.4s ease;
 }
 
-[data-theme='dark'] .compassWrapper {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(10, 89, 74, 0.1);
+.alignedCompass {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, var(--white) 0%, rgba(236, 253, 245, 0.6) 100%);
+  box-shadow: inset 0 4px 15px rgba(16, 185, 129, 0.1), 0 10px 25px rgba(16, 185, 129, 0.2);
 }
 
-.compassRing {
+/* Glow Ring */
+.glowRing {
   position: absolute;
-  width: 90%;
-  height: 90%;
+  inset: -10px;
   border-radius: 50%;
-  border: 2px dashed var(--border);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
 }
 
+.glowAligned {
+  opacity: 1;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+/* Cardinal Points */
 .cardinalPoints {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
 .point {
   position: absolute;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-}
-
-.point.n { top: 10px; left: 50%; transform: translateX(-50%); color: var(--gold); }
-.point.s { bottom: 10px; left: 50%; transform: translateX(-50%); }
-.point.e { top: 50%; right: 15px; transform: translateY(-50%); }
-.point.w { top: 50%; left: 15px; transform: translateY(-50%); }
-
-.needle {
-  position: relative;
-  width: 12px;
-  height: 140px;
-  background: linear-gradient(to bottom, var(--primary) 50%, var(--surface-2) 50%);
-  border-radius: 6px;
-  transform-origin: center;
-  transition: transform 0.5s cubic-bezier(0.4, 2.5, 0.6, 1);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.needleCenter {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  color: var(--text-slate);
   transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
-  background-color: var(--gold);
-  border: 4px solid var(--surface-1);
-  border-radius: 50%;
-  z-index: 10;
+}
+
+.n { top: 0; left: 50%; color: var(--primary-emerald); }
+.s { bottom: -20px; left: 50%; }
+.e { top: 50%; right: -20px; }
+.w { top: 50%; left: 0; }
+
+/* Needle */
+.needle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
 }
 
 .kaabaPointer {
   position: absolute;
-  top: -10px;
+  top: 15px;
   left: 50%;
   transform: translateX(-50%);
-  color: var(--primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary-emerald);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-.infoCard {
-  width: 100%;
-  max-width: 400px;
+.needleAligned .kaabaPointer {
+  color: #10B981;
+  filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+}
+
+.kaabaLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--white);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.compassCenter {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-emerald);
+  border-radius: 50%;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 3px solid var(--white);
+}
+
+/* Aligned Badge */
+.alignedBadge {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: slide-up 0.3s ease;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Info Panel ── */
+.infoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+/* Cards */
+.directionCard {
+  background: linear-gradient(135deg, var(--primary-emerald) 0%, var(--primary-sage) 100%);
+  color: #ffffff;
+  padding: var(--spacing-5);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   text-align: center;
 }
 
-.degreeBox {
-  font-size: 3rem;
+.directionLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.directionValue {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* GPS Status */
+.statusCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: var(--white);
+}
+
+.statusGranted {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: #F0FDF4;
+  color: #166534;
+}
+
+.statusDenied {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+.statusTitle {
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--primary);
-  line-height: 1;
-  margin-bottom: 0.5rem;
-  font-family: inherit;
+  margin-bottom: 2px;
 }
 
-.locationText {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+.statusSub {
+  font-size: 0.75rem;
+  opacity: 0.8;
 }
 
-/* Premium Qibla finder enhancements */
-.alignedNeedle {
-  background: linear-gradient(to bottom, #10B981 50%, var(--surface-2) 50%) !important;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), 0 4px 10px rgba(0,0,0,0.2) !important;
-}
-
-.alignedCompass {
-  box-shadow: 0 0 35px rgba(16, 185, 129, 0.25), 0 10px 30px rgba(0, 0, 0, 0.1), inset 0 0 20px rgba(10, 89, 74, 0.05) !important;
-  border-color: #10B981 !important;
-}
-
-.citySelectorWrapper {
-  margin-top: 1rem;
+/* City Selector */
+.selectorCard {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
+  gap: 6px;
+  background: var(--white);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+}
+
+.selectorLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-slate);
 }
 
 .citySelect {
-  background-color: var(--white);
-  border: 1px solid var(--border-light);
+  padding: 10px 12px;
   border-radius: var(--radius-md);
-  padding: 0.75rem 1rem;
-  color: var(--text-charcoal);
+  border: 1px solid var(--border-light);
+  background: var(--secondary-ivory);
   font-family: inherit;
-  font-size: 0.95rem;
-  width: 100%;
-  max-width: 250px;
-  outline: none;
+  font-size: 0.9rem;
+  color: var(--text-charcoal);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
 .citySelect:focus {
-  border-color: var(--primary);
+  border-color: var(--primary-emerald);
 }
 
-.alignmentAlert {
-  color: #10B981;
+/* Heading Card */
+.headingCard {
+  background: var(--white);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.headingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.headingRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.headingLabel {
+  font-size: 0.85rem;
+  color: var(--text-gray);
   font-weight: 600;
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  animation: pulse 1.5s infinite;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.9; }
+.headingValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-charcoal);
+}
+
+.alignedText {
+  color: #10B981;
+}
+
+/* Instructions */
+.instructionBox {
+  background: var(--secondary-sand);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border-right: 4px solid var(--accent-gold);
+}
+
+.instructionText {
+  font-size: 0.8rem;
+  color: var(--text-slate);
+  line-height: 1.6;
 }

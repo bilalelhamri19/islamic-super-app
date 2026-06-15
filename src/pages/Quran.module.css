@@ -1,143 +1,267 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6);
-  max-width: 900px;
+  gap: var(--spacing-5);
+  direction: rtl;
+  max-width: 800px;
   margin: 0 auto;
   position: relative;
-  padding-bottom: 100px;
+  padding-bottom: 90px; /* Space for the floating player */
 }
 
+/* ── Header ── */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: var(--spacing-4) 0;
-  border-bottom: 1px solid var(--border-light);
-  position: sticky;
-  top: 76px; /* offset for main app layout header */
-  background-color: var(--secondary-ivory);
-  opacity: 0.95;
-  z-index: 10;
-  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  background: var(--white);
+  padding: var(--spacing-5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .surahInfo {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: 4px;
 }
 
-.surahSelectorWrapper {
+.selectorsRow {
+  display: flex;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.dropdownWrapper {
   position: relative;
 }
 
-.surahSelectorBtn {
-  background: none;
-  border: none;
+.selectorBtn {
   display: flex;
   align-items: center;
+  gap: 4px;
+  background: var(--secondary-ivory);
+  border: 1px solid var(--primary-sage);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  padding: 0;
+  transition: all 0.2s;
 }
 
-.badge {
-  display: inline-block;
-  background-color: var(--secondary-stone);
-  color: var(--primary-emerald);
-  padding: 2px 10px;
-  border-radius: var(--radius-full);
+.selectorBtn:hover {
+  background: #E6F4F1;
+}
+
+.badgePrimary {
   font-size: 0.75rem;
-  font-weight: 600;
-  width: fit-content;
+  font-weight: 700;
+  color: var(--primary-emerald);
+}
+
+.badgeSecondary {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-charcoal);
+}
+
+.selectorIcon {
+  color: var(--primary-emerald);
 }
 
 .dropdownMenu {
   position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: var(--white);
+  top: calc(100% + 8px);
+  inset-inline-start: 0;
+  background: var(--white);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   max-height: 300px;
   overflow-y: auto;
-  width: 250px;
-  z-index: 20;
-  margin-top: 8px;
+  width: 200px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
 }
 
 .dropdownItem {
-  width: 100%;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 16px;
   border: none;
-  background: none;
+  background: transparent;
+  width: 100%;
+  text-align: right;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--secondary-sand);
+  transition: background 0.2s;
+}
+
+.dropdownItem:hover {
+  background: var(--secondary-ivory);
+}
+
+.activeItem {
+  background: rgba(15, 92, 77, 0.05);
+}
+
+.dropIndex {
+  font-size: 0.8rem;
+  color: var(--text-gray);
+  font-weight: 600;
+}
+
+.dropNameAr {
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--text-charcoal);
-  transition: background-color 0.2s;
+  font-family: var(--font-arabic);
 }
 
-.dropdownItem:hover, .activeItem {
-  background-color: var(--secondary-ivory);
-  color: var(--primary-emerald);
+.pageTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-charcoal);
+  font-family: var(--font-arabic);
 }
 
-.dropdownItem:last-child {
-  border-bottom: none;
+.pageSub {
+  font-size: 0.85rem;
+  color: var(--text-gray);
 }
 
+/* ── Actions ── */
 .actions {
   display: flex;
   gap: var(--spacing-2);
 }
 
-.readerArea {
+.iconBtn {
+  width: 40px;
+  height: 40px;
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  color: var(--text-slate);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iconBtn:hover {
+  background: var(--secondary-sand);
+  color: var(--primary-emerald);
+}
+
+.iconBtnActive {
+  background: rgba(15, 92, 77, 0.1);
+  color: var(--primary-emerald);
+  border-color: rgba(15, 92, 77, 0.3);
+}
+
+/* ── Reader Area ── */
+.readerArea {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  padding: var(--spacing-6) var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  min-height: 50vh;
 }
 
 .bismillah {
-  font-family: var(--font-arabic);
-  font-size: 2.5rem;
   text-align: center;
-  color: var(--primary-emerald);
-  padding: var(--spacing-4) 0;
+  font-family: var(--font-arabic);
+  font-size: 1.8rem;
+  color: var(--text-charcoal);
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px dashed var(--border-light);
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) 0;
+  gap: var(--spacing-3);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--secondary-sand);
+  border-top-color: var(--primary-emerald);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  font-weight: 600;
 }
 
 .versesList {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6);
+  gap: var(--spacing-4);
 }
 
 .verseRow {
   display: flex;
-  gap: var(--spacing-5);
+  gap: var(--spacing-4);
   padding: var(--spacing-4);
   border-radius: var(--radius-lg);
-  transition: background-color 0.3s ease;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.verseRow:hover {
+  background: var(--secondary-ivory);
 }
 
 .activeVerseRow {
-  background-color: var(--secondary-ivory);
-  box-shadow: inset 2px 0 0 var(--accent-gold);
+  background: rgba(15, 92, 77, 0.03);
+  border: 1px solid rgba(15, 92, 77, 0.1);
+}
+
+.verseNumberWrap {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .verseNumber {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--white);
+  border: 1.5px solid var(--border-light);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="%23C8A96B" stroke-width="3"/></svg>');
-  background-size: cover;
-  font-family: var(--font-latin);
-  font-size: 0.875rem;
-  color: var(--text-slate);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--primary-emerald);
+}
+
+.activeVerseRow .verseNumber {
+  background: var(--primary-emerald);
+  color: var(--white);
+  border-color: var(--primary-emerald);
 }
 
 .verseContent {
@@ -147,80 +271,65 @@
   gap: var(--spacing-3);
 }
 
-.verseContent .arabic-text-large {
-  text-align: right;
+.quranicText {
+  font-family: var(--font-arabic);
+  font-size: 1.8rem;
+  line-height: 2.2;
   color: var(--text-charcoal);
+  text-align: right;
 }
 
-.translation {
-  font-size: 1.125rem;
-  color: var(--text-slate);
-  line-height: 1.8;
-}
-
+/* ── Tafsir Panel ── */
 .tafsirPanel {
-  margin-top: var(--spacing-4);
+  background: #F8FAFC;
+  border-right: 3px solid var(--primary-emerald);
   padding: var(--spacing-4);
-  background-color: rgba(248, 245, 239, 0.5); /* subtle ivory */
-  border-left: 3px solid var(--primary-sage);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-  animation: slideDown 0.3s ease-out forwards;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  margin-top: var(--spacing-2);
 }
 
 .tafsirHeader {
   margin-bottom: var(--spacing-2);
+}
+
+.tafsirLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--primary-emerald);
 }
 
-.font-semibold { font-weight: 600; }
-.leading-relaxed { line-height: 1.625; }
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.loaderContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-8) 0;
-  gap: var(--spacing-4);
+.tafsirText {
+  font-family: var(--font-arabic);
+  font-size: 1.15rem;
+  line-height: 1.8;
   color: var(--text-slate);
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--primary-emerald);
-  border-radius: var(--radius-full);
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Audio Player */
+/* ── Floating Audio Player ── */
 .audioPlayer {
   position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 600px;
-  background-color: var(--white);
+  bottom: 20px;
+  inset-inline-start: 50%;
+  transform: translateX(50%); /* For RTL centering */
+  background: linear-gradient(135deg, var(--text-charcoal) 0%, #111827 100%);
+  color: #ffffff;
+  padding: 12px 24px;
   border-radius: var(--radius-full);
-  padding: var(--spacing-3) var(--spacing-5);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-light);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  z-index: 50;
-  backdrop-filter: blur(10px);
+  gap: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 100;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+@media (max-width: 600px) {
+  .audioPlayer {
+    width: 90%;
+    transform: translateX(50%);
+    justify-content: space-between;
+    gap: 12px;
+  }
 }
 
 .playerInfo {
@@ -228,45 +337,54 @@
   flex-direction: column;
 }
 
+.reciterName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.nowPlaying {
+  font-size: 0.75rem;
+  color: var(--accent-gold);
+  opacity: 0.9;
+}
+
 .playerControls {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: 16px;
+  direction: ltr; /* keep media controls LTR naturally */
 }
 
 .controlBtn {
-  color: var(--text-slate);
-  width: 40px;
-  height: 40px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-full);
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  opacity: 0.8;
 }
 
 .controlBtn:hover {
-  background-color: var(--secondary-ivory);
+  opacity: 1;
   color: var(--primary-emerald);
+  transform: scale(1.1);
 }
 
 .playBtn {
-  background-color: var(--primary-emerald);
-  color: #ffffff;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
+  background: var(--primary-emerald);
+  border-radius: 50%;
+  opacity: 1;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .playBtn:hover {
-  background-color: var(--primary-green);
+  background: #10B981;
   color: #ffffff;
   transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-  .audioPlayer {
-    bottom: 80px; 
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-4);
-  }
 }
