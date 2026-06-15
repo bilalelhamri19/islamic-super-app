@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, BookOpen, Trophy, Settings, LogIn, LogOut, Sun, Moon, Languages, Heart, ScrollText } from 'lucide-react';
+import { Home, BookOpen, Trophy, Settings, LogIn, LogOut, Sun, Moon, Languages, Heart, ScrollText, Bell, BellOff, VolumeX } from 'lucide-react';
 import styles from './AppLayout.module.css';
+import { usePrayerTimes } from '../../hooks/usePrayerTimes';
+import { useAdhanPlayer } from '../../hooks/useAdhanPlayer';
 
 export function AppLayout() {
   const navigate = useNavigate();
@@ -28,6 +30,9 @@ export function AppLayout() {
     } catch (e) {}
     return { level: 4, points: 2450 };
   });
+
+  const { prayers } = usePrayerTimes();
+  const { isPlaying, activePrayer, stopAdhan, requestPermission, permission } = useAdhanPlayer(prayers);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('mizan_theme') === 'dark';
@@ -146,6 +151,25 @@ export function AppLayout() {
             <h2 className="heading-md">{user?.isAdmin ? t('app.admin') : 'طالب علم'}</h2>
           </div>
           <div className={styles.actions}>
+            {permission !== 'granted' && (
+              <button 
+                className={styles.themeToggle} 
+                onClick={requestPermission}
+                title="تفعيل الإشعارات للأذان"
+                style={{ color: 'var(--accent-gold)' }}
+              >
+                <BellOff size={20} />
+              </button>
+            )}
+            {permission === 'granted' && (
+              <button 
+                className={styles.themeToggle} 
+                title="إشعارات الأذان مفعلة"
+                style={{ color: 'var(--primary-emerald)', cursor: 'default' }}
+              >
+                <Bell size={20} />
+              </button>
+            )}
             <button 
               className={styles.themeToggle} 
               onClick={() => {
@@ -186,6 +210,22 @@ export function AppLayout() {
           </NavLink>
         ))}
       </nav>
+      {/* Adhan Modal overlay */}
+      {isPlaying && (
+        <div className={styles.adhanOverlay}>
+          <div className={styles.adhanModal}>
+            <div className={styles.adhanIconWrapper}>
+              <Bell size={40} className={styles.pulseIcon} />
+            </div>
+            <h2 className={styles.adhanTitle}>حان الآن موعد الأذان</h2>
+            <p className={styles.adhanSub}>صلاة {activePrayer}</p>
+            <button className={styles.stopAdhanBtn} onClick={stopAdhan}>
+              <VolumeX size={20} />
+              إيقاف الصوت
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
