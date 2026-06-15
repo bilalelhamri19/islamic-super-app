@@ -121,28 +121,18 @@ export function AppLayout() {
         <div className={styles.bottomSection}>
           <div className={styles.profile}>
             <div className={styles.avatar}>
-              {user?.isAdmin ? 'A' : user?.name ? user.name.charAt(0).toUpperCase() : '☪'}
+              {user?.isAdmin ? 'A' : '☪'}
             </div>
             <div className={styles.userInfo}>
-              <span className={styles.userName}>{user?.isAdmin ? t('app.admin') : user?.name || t('app.guest')}</span>
+              <span className={styles.userName}>{user?.isAdmin ? t('app.admin') : 'مسلم'}</span>
               <span className={styles.userStatus}>{t('app.level')} {stats.level} {t('app.seeker')}</span>
             </div>
           </div>
 
-          {user ? (
+          {user?.isAdmin && (
             <button className={styles.logoutBtn} onClick={handleLogout} title={t('app.logout')}>
               <LogOut size={16} />
               {t('app.logout')}
-            </button>
-          ) : (
-            <button
-              className={styles.logoutBtn}
-              onClick={() => navigate('/login')}
-              title={t('app.login')}
-              style={{ background: '#1a6b4a', color: 'white', border: 'none' }}
-            >
-              <LogIn size={16} />
-              {t('app.login')}
             </button>
           )}
         </div>
@@ -153,7 +143,7 @@ export function AppLayout() {
         <div className={styles.header}>
           <div className={styles.welcome}>
             <p className="text-small">{t('app.greeting')}</p>
-            <h2 className="heading-md">{user?.isAdmin ? t('app.admin') : user?.name || t('app.guest')}</h2>
+            <h2 className="heading-md">{user?.isAdmin ? t('app.admin') : 'طالب علم'}</h2>
           </div>
           <div className={styles.actions}>
             <button 
