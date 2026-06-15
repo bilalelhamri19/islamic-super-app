@@ -45,7 +45,7 @@ export default function AdminLogin() {
       <div className={styles.authCard}>
         <div className={styles.brandContainer}>
           <div className={styles.logoMark}></div>
-          <h1 className={styles.logoText}>Mizan</h1>
+          <h1 className={styles.logoText}>إلى الجنة</h1>
         </div>
         
         <div className={styles.welcomeSection}>

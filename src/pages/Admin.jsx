@@ -103,7 +103,7 @@ export default function Admin() {
   };
 
   const generateReport = () => {
-    const report = `تقرير تطبيق ميزان\n===================\nهدف التحدي اليومي: ${challengeTarget} آيات\nالمستخدمون:\n${users.map(u => `${u.name} - ${u.status}`).join('\n')}`;
+    const report = `تقرير تطبيق إلى الجنة\n===================\nهدف التحدي اليومي: ${challengeTarget} آيات\nالمستخدمون:\n${users.map(u => `${u.name} - ${u.status}`).join('\n')}`;
     const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

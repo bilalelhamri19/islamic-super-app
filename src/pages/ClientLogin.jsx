@@ -40,7 +40,7 @@ export default function ClientLogin() {
         <div className={styles.leftPanel}>
           <div className={styles.brandWrap}>
             <div className={styles.logoMark}></div>
-            <h1 className={styles.brandName}>Mizan</h1>
+            <h1 className={styles.brandName}>إلى الجنة</h1>
           </div>
           <h2 className={styles.tagline}>
             ابدأ رحلتك مع القرآن الكريم
@@ -68,7 +68,7 @@ export default function ClientLogin() {
         <div className={styles.rightPanel}>
           <div className={styles.authContent}>
               <>
-                <h3 className={styles.authTitle}>مرحباً بك في تطبيق ميزان</h3>
+                <h3 className={styles.authTitle}>مرحباً بك في تطبيق إلى الجنة</h3>
                 <p className={styles.authSubtitle}>
                   اضغط على الزر أدناه للمتابعة كزائر والاستمتاع بجميع مميزات التطبيق مجاناً
                 </p>
