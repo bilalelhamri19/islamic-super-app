@@ -81,11 +81,8 @@ export default function Admin() {
         }
       }
 
-      // Fallback to local only
-      setUsers(localUsers.length > 0 ? localUsers : [
-        { name: 'خالد م.', email: 'khaled@example.com', date: 'اليوم', status: 'Active' },
-        { name: 'سارة أ.', email: 'sara@example.com', date: 'اليوم', status: 'Active' }
-      ]);
+      // Fallback to local only (NO default users)
+      setUsers(localUsers);
       setLoading(false);
     } catch (err) {
       console.error('Error:', err);
