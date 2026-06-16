@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
-import { supabase } from '../lib/supabase';
 import styles from './AdminLogin.module.css';
 
 export default function SignUp() {
@@ -13,7 +12,6 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const addUserToLocalList = (userData) => {
     let users = [];
@@ -42,7 +40,7 @@ export default function SignUp() {
     localStorage.setItem('mizan_admin_users', JSON.stringify(users));
   };
 
-  const handleSignUp = async (e) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
     setError('');
 
@@ -56,77 +54,18 @@ export default function SignUp() {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      // Inscription مع Supabase
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            name: name || email.split('@')[0]
-          }
-        }
-      });
-
-      if (signUpError) {
-        throw signUpError;
-      }
-
-      if (data.user) {
-        // إضافة الملف الشخصي
-        await supabase.from('profiles').upsert({
-          id: data.user.id,
-          name: name || email.split('@')[0],
-          is_admin: email === 'bilalelhamri2006@gmail.com'
-        });
-
-        // إضافة الإحصائيات
-        await supabase.from('user_stats').insert({
-          user_id: data.user.id,
-          level: 1,
-          points: 0,
-          daily_read_count: 0
-        });
-
-        // إضافة للمستخدمين المحليين
-        addUserToLocalList({ name, email });
-
-        const userObj = {
-          email: data.user.email,
-          uid: data.user.id,
-          isAdmin: email === 'bilalelhamri2006@gmail.com',
-          name: name || email.split('@')[0]
-        };
-
-        localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-        window.dispatchEvent(new Event('mizan_stats_updated'));
-        navigate('/');
-      }
-    } catch (err) {
-      console.error('Supabase signup error:', err);
-      
-      // Fallback إلى localStorage
-      try {
-        const userObj = { 
-          email, 
-          name: name || email.split('@')[0], 
-          isAdmin: email === 'bilalelhamri2006@gmail.com',
-          uid: 'local-' + Date.now()
-        };
-        
-        addUserToLocalList(userObj);
-        
-        localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-        window.dispatchEvent(new Event('mizan_stats_updated'));
-        navigate('/');
-      } catch (localErr) {
-        setError(t('auth.error') || 'حدث خطأ أثناء التسجيل');
-      }
-    } finally {
-      setLoading(false);
-    }
+    const userObj = { 
+      email, 
+      name: name || email.split('@')[0], 
+      isAdmin: email === 'bilalelhamri2006@gmail.com',
+      uid: 'local-' + Date.now()
+    };
+    
+    addUserToLocalList(userObj);
+    
+    localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
+    window.dispatchEvent(new Event('mizan_stats_updated'));
+    navigate('/');
   };
 
   return (
@@ -203,8 +142,8 @@ export default function SignUp() {
             />
           </div>
 
-          <Button type="submit" variant="primary" className={styles.submitBtn} disabled={loading}>
-            {loading ? '...' : t('auth.signup')}
+          <Button type="submit" variant="primary" className={styles.submitBtn}>
+            {t('auth.signup')}
           </Button>
         </form>
 

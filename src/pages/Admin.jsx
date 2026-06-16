@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Users, BookOpen, Activity, MoreVertical, Trash2, Pencil, X, Target, TrendingUp, Download } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import styles from './Admin.module.css';
 
 export default function Admin() {
@@ -23,8 +22,19 @@ export default function Admin() {
     }
   }, [navigate]);
 
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mizan_admin_users');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return [
+      { name: 'خالد م.', email: 'khaled@example.com', date: 'اليوم، 10:42 ص', status: 'Active' },
+      { name: 'سارة أ.', email: 'sarah@example.com', date: 'اليوم، 09:15 ص', status: 'Active' },
+      { name: 'عمر ف.', email: 'omar@example.com', date: 'أمس', status: 'Pending Review' },
+    ];
+  });
 
   const [newUser, setNewUser] = useState({ name: '', email: '' });
   const [challengeTarget, setChallengeTarget] = useState(() => {
@@ -34,66 +44,9 @@ export default function Admin() {
   const [openMenu, setOpenMenu] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
 
-  // جلب المستخدمين من Supabase
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      // جلب من localStorage أولاً
-      let localUsers = [];
-      try {
-        const saved = localStorage.getItem('mizan_admin_users');
-        if (saved) localUsers = JSON.parse(saved);
-      } catch (e) {}
-
-      // محاولة جلب من Supabase
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        // دمج البيانات
-        const supabaseUsers = data.map(u => ({
-          id: u.id,
-          name: u.name,
-          email: u.email || u.id.slice(0, 8) + '@...',
-          date: new Date(u.created_at).toLocaleDateString('ar-MA'),
-          status: u.is_admin ? 'Admin' : 'Active'
-        }));
-
-        // إضافة المستخدمين المحليين الذين ليسوا في Supabase
-        localUsers.forEach(localU => {
-          if (!supabaseUsers.some(su => su.email === localU.email)) {
-            supabaseUsers.push(localU);
-          }
-        });
-
-        setUsers(supabaseUsers);
-      } else {
-        setUsers(localUsers.length > 0 ? localUsers : [
-          { name: 'خالد م.', email: 'khaled@example.com', date: 'اليوم، 10:42 ص', status: 'Active' },
-          { name: 'سارة أ.', email: 'sarah@example.com', date: 'اليوم، 09:15 ص', status: 'Active' },
-          { name: 'عمر ف.', email: 'omar@example.com', date: 'أمس', status: 'Pending Review' },
-        ]);
-      }
-    } catch (err) {
-      console.error('Error fetching users:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Sync users to localStorage
   useEffect(() => {
-    if (users.length > 0) {
-      const localOnly = users.filter(u => !u.id);
-      if (localOnly.length > 0) {
-        localStorage.setItem('mizan_admin_users', JSON.stringify(localOnly));
-      }
-    }
+    localStorage.setItem('mizan_admin_users', JSON.stringify(users));
   }, [users]);
 
   // Close dropdown on outside click
@@ -107,31 +60,15 @@ export default function Admin() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const approveUser = async (index) => {
+  const approveUser = (index) => {
     const updated = [...users];
     updated[index].status = 'Active';
     setUsers(updated);
-    
-    // تحديث في Supabase
-    if (users[index].id) {
-      await supabase
-        .from('profiles')
-        .update({ is_admin: true })
-        .eq('id', users[index].id);
-    }
   };
 
-  const deleteUser = async (index) => {
+  const deleteUser = (index) => {
     if (window.confirm(`هل أنت متأكد من حذف "${users[index].name}"؟`)) {
-      const userToDelete = users[index];
-      const newUsers = users.filter((_, i) => i !== index);
-      setUsers(newUsers);
-      
-      // حذف من Supabase
-      if (userToDelete.id) {
-        await supabase.auth.admin.deleteUser(userToDelete.id).catch(() => {});
-        await supabase.from('profiles').delete().eq('id', userToDelete.id).catch(() => {});
-      }
+      setUsers(users.filter((_, i) => i !== index));
     }
     setOpenMenu(null);
   };
@@ -141,7 +78,7 @@ export default function Admin() {
     setOpenMenu(null);
   };
 
-  const saveEdit = async () => {
+  const saveEdit = () => {
     if (!editingUser || !editingUser.name.trim()) return;
     const updated = [...users];
     updated[editingUser.index] = {
@@ -151,17 +88,6 @@ export default function Admin() {
     };
     setUsers(updated);
     setEditingUser(null);
-
-    // تحديث في Supabase
-    if (users[editingUser.index].id) {
-      await supabase
-        .from('profiles')
-        .update({ 
-          name: editingUser.name,
-          is_admin: editingUser.status === 'Admin'
-        })
-        .eq('id', users[editingUser.index].id);
-    }
   };
 
   const addUser = (e) => {
@@ -169,7 +95,7 @@ export default function Admin() {
     if (!newUser.name) return;
     setUsers([...users, { 
       name: newUser.name, 
-      email: newUser.email || newUser.name.toLowerCase().replace(/\s/g, '') + '@local.com', 
+      email: newUser.email, 
       date: 'الآن', 
       status: 'Pending Review' 
     }]);

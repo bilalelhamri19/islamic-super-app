@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Settings2, BookOpenText, FastForward, Rewind, Play, Pause, ChevronDown, Mic2, Bookmark, BookmarkCheck } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import styles from './Quran.module.css';
 
 const RECITERS = [
@@ -124,10 +123,7 @@ export default function Quran() {
     return bookmarks.some(b => b.surah === surahNum && b.ayah === ayahNum);
   };
 
-  const toggleBookmark = async (surahNum, ayahNum) => {
-    const user = JSON.parse(localStorage.getItem('mizan_auth_user') || '{}');
-    
-    // تحديث local
+  const toggleBookmark = (surahNum, ayahNum) => {
     const newBookmarks = [...bookmarks];
     const index = newBookmarks.findIndex(b => b.surah === surahNum && b.ayah === ayahNum);
     if (index > -1) {
@@ -137,30 +133,6 @@ export default function Quran() {
     }
     setBookmarks(newBookmarks);
     localStorage.setItem('mizan_bookmarks', JSON.stringify(newBookmarks));
-
-    // تحديث Supabase إذا كان المستخدم مسجل
-    if (user.uid && !user.uid.startsWith('local-')) {
-      try {
-        if (index > -1) {
-          // حذف
-          await supabase
-            .from('bookmarks')
-            .delete()
-            .eq('user_id', user.uid)
-            .eq('surah_number', surahNum)
-            .eq('ayah_number', ayahNum);
-        } else {
-          // إضافة
-          await supabase.from('bookmarks').insert({
-            user_id: user.uid,
-            surah_number: surahNum,
-            ayah_number: ayahNum
-          });
-        }
-      } catch (err) {
-        console.error('Bookmark sync error:', err);
-      }
-    }
   };
 
   const handleVerseClick = (ayahNumber) => {
@@ -187,22 +159,6 @@ export default function Quran() {
           stats.points = (stats.points || 0) + 5;
           localStorage.setItem('mizan_user_stats', JSON.stringify(stats));
           window.dispatchEvent(new Event('mizan_stats_updated'));
-
-          // تحديث Supabase
-          const user = JSON.parse(localStorage.getItem('mizan_auth_user') || '{}');
-          if (user.uid && !user.uid.startsWith('local-')) {
-            supabase
-              .from('user_stats')
-              .update({
-                points: stats.points,
-                daily_read_count: stats.dailyRead.count,
-                last_read_date: today
-              })
-              .eq('user_id', user.uid)
-              .then(({ error }) => {
-                if (error) console.error('Stats sync error:', error);
-              });
-          }
         }
       } catch (err) {}
     }

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { Button } from '../components/ui/Button';
 import styles from './AdminLogin.module.css';
 
@@ -10,11 +9,10 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     setError('');
 
-    // التحقق من الأدمن المحلي
     const ADMIN_EMAIL = 'bilalelhamri2006@gmail.com';
     const ADMIN_PASS = 'admin123';
 
@@ -25,39 +23,8 @@ export default function AdminLogin() {
       navigate('/admin');
       return;
     }
-
-    // محاولة الدخول مع Supabase
-    try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-
-      if (signInError) {
-        throw signInError;
-      }
-
-      if (data.user) {
-        // التحقق إذا هو أدمن
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', data.user.id)
-          .single();
-
-        const userObj = { 
-          email: data.user.email, 
-          uid: data.user.id, 
-          isAdmin: profile?.is_admin || data.user.email === ADMIN_EMAIL 
-        };
-        localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-        window.dispatchEvent(new Event('mizan_stats_updated'));
-        navigate('/admin');
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Identifiants invalides. Veuillez vérifier votre email et mot de passe.');
-    }
+    
+    setError('Identifiants invalides. Veuillez vérifier votre email et mot de passe.');
   };
 
   return (
