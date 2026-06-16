@@ -44,7 +44,7 @@ export default function AdminLogin() {
     <div className={styles.loginContainer}>
       <div className={styles.authCard}>
         <div className={styles.brandContainer}>
-          <div className={styles.logoMark}></div>
+          <img src="/logo.png" className={styles.logoImage} alt="Logo" />
           <h1 className={styles.logoText}>إلى الجنة</h1>
         </div>
         

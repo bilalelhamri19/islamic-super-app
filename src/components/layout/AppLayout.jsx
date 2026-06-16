@@ -103,7 +103,7 @@ export function AppLayout() {
       <aside className={styles.sidebar}>
         <div className={styles.logoContainer}>
           <div className={styles.logo}>
-            <span className={styles.logoMark}></span>
+            <img src="/logo.png" className={styles.logoImage} alt="Logo" />
             <h1 className={styles.logoText}>{t('app.name')}</h1>
           </div>
         </div>

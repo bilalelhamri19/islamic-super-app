@@ -39,7 +39,7 @@ export default function ClientLogin() {
         {/* Left Panel - Branding */}
         <div className={styles.leftPanel}>
           <div className={styles.brandWrap}>
-            <div className={styles.logoMark}></div>
+            <img src="/logo.png" className={styles.logoImage} alt="Logo" />
             <h1 className={styles.brandName}>إلى الجنة</h1>
           </div>
           <h2 className={styles.tagline}>
