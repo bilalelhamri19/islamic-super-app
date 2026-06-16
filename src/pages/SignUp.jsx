@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
-import { auth } from '../lib/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { supabase } from '../lib/supabase';
 import styles from './AdminLogin.module.css';
 
 export default function SignUp() {
@@ -16,8 +15,7 @@ export default function SignUp() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const addUserToAdminList = (userData) => {
-    // Read existing users
+  const addUserToLocalList = (userData) => {
     let users = [];
     try {
       const saved = localStorage.getItem('mizan_admin_users');
@@ -28,18 +26,16 @@ export default function SignUp() {
       console.error('Error reading users:', e);
     }
 
-    // Check if user already exists
     const userExists = users.some(u => u.email === userData.email);
     if (userExists) {
-      return; // User already in list
+      return;
     }
 
-    // Add new user
     const newUser = {
       name: userData.name || userData.email.split('@')[0],
       email: userData.email,
       date: new Date().toLocaleDateString('ar-MA'),
-      status: 'Active' // New users are active by default
+      status: 'Active'
     };
     
     users.push(newUser);
@@ -55,37 +51,78 @@ export default function SignUp() {
       return;
     }
 
+    if (password.length < 6) {
+      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      return;
+    }
+
     setLoading(true);
 
-    // Try Firebase auth first, fallback to local
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const userObj = {
-        email: userCredential.user.email,
-        uid: userCredential.user.uid,
-        isAdmin: false,
-        name: name || email.split('@')[0]
-      };
+      // Inscription مع Supabase
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            name: name || email.split('@')[0]
+          }
+        }
+      });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      if (data.user) {
+        // إضافة الملف الشخصي
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          name: name || email.split('@')[0],
+          is_admin: email === 'bilalelhamri2006@gmail.com'
+        });
+
+        // إضافة الإحصائيات
+        await supabase.from('user_stats').insert({
+          user_id: data.user.id,
+          level: 1,
+          points: 0,
+          daily_read_count: 0
+        });
+
+        // إضافة للمستخدمين المحليين
+        addUserToLocalList({ name, email });
+
+        const userObj = {
+          email: data.user.email,
+          uid: data.user.id,
+          isAdmin: email === 'bilalelhamri2006@gmail.com',
+          name: name || email.split('@')[0]
+        };
+
+        localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
+        window.dispatchEvent(new Event('mizan_stats_updated'));
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Supabase signup error:', err);
       
-      // Add user to admin list
-      addUserToAdminList(userObj);
-      
-      localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-      window.dispatchEvent(new Event('mizan_stats_updated'));
-      navigate('/');
-    } catch (firebaseErr) {
-      // Fallback to local storage
+      // Fallback إلى localStorage
       try {
-        const userObj = { email, name: name || email.split('@')[0], isAdmin: false };
+        const userObj = { 
+          email, 
+          name: name || email.split('@')[0], 
+          isAdmin: email === 'bilalelhamri2006@gmail.com',
+          uid: 'local-' + Date.now()
+        };
         
-        // Add user to admin list
-        addUserToAdminList(userObj);
+        addUserToLocalList(userObj);
         
         localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
         window.dispatchEvent(new Event('mizan_stats_updated'));
         navigate('/');
-      } catch (err) {
-        setError(t('auth.error'));
+      } catch (localErr) {
+        setError(t('auth.error') || 'حدث خطأ أثناء التسجيل');
       }
     } finally {
       setLoading(false);
