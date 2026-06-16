@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Settings2, BookOpenText, FastForward, Rewind, Play, Pause, ChevronDown, Mic2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import styles from './Quran.module.css';
 
 const RECITERS = [
@@ -16,7 +17,7 @@ const RECITERS = [
   { id: 'a_jbr', name: 'علي جابر', url: 'https://server11.mp3quran.net/a_jbr/' },
   { id: 'frs_a', name: 'فارس عباد', url: 'https://server8.mp3quran.net/frs_a/' },
   { id: 'ajm', name: 'أحمد بن علي العجمي', url: 'https://server10.mp3quran.net/ajm/' },
-  { id: 'sds', name: 'عبدالرحمن السديس', url: 'https://server11.mp3quran.net/sds/' },
+  { id: 'sds', name: 'عبد الرحمن السديس', url: 'https://server11.mp3quran.net/sds/' },
   { id: 'shur', name: 'سعود الشريم', url: 'https://server7.mp3quran.net/shur/' }
 ];
 
@@ -123,7 +124,10 @@ export default function Quran() {
     return bookmarks.some(b => b.surah === surahNum && b.ayah === ayahNum);
   };
 
-  const toggleBookmark = (surahNum, ayahNum) => {
+  const toggleBookmark = async (surahNum, ayahNum) => {
+    const user = JSON.parse(localStorage.getItem('mizan_auth_user') || '{}');
+    
+    // Update local
     const newBookmarks = [...bookmarks];
     const index = newBookmarks.findIndex(b => b.surah === surahNum && b.ayah === ayahNum);
     if (index > -1) {
@@ -133,6 +137,30 @@ export default function Quran() {
     }
     setBookmarks(newBookmarks);
     localStorage.setItem('mizan_bookmarks', JSON.stringify(newBookmarks));
+
+    // Update Supabase
+    if (user.uid && !user.uid.startsWith('local-')) {
+      try {
+        if (index > -1) {
+          // Delete
+          await supabase
+            .from('bookmarks')
+            .delete()
+            .eq('user_id', user.uid)
+            .eq('surah_number', surahNum)
+            .eq('ayah_number', ayahNum);
+        } else {
+          // Insert
+          await supabase.from('bookmarks').insert({
+            user_id: user.uid,
+            surah_number: surahNum,
+            ayah_number: ayahNum
+          });
+        }
+      } catch (err) {
+        console.error('Bookmark sync error:', err);
+      }
+    }
   };
 
   const handleVerseClick = (ayahNumber) => {
@@ -159,8 +187,24 @@ export default function Quran() {
           stats.points = (stats.points || 0) + 5;
           localStorage.setItem('mizan_user_stats', JSON.stringify(stats));
           window.dispatchEvent(new Event('mizan_stats_updated'));
+
+          // Update Supabase
+          const user = JSON.parse(localStorage.getItem('mizan_auth_user') || '{}');
+          if (user.uid && !user.uid.startsWith('local-')) {
+            supabase
+              .from('user_stats')
+              .update({
+                points: stats.points,
+                daily_read_count: stats.dailyRead.count,
+                last_read_date: today
+              })
+              .eq('user_id', user.uid)
+              .then(({ error }) => {
+                if (error) console.error('Stats sync error:', error);
+              });
+          }
         }
-      } catch (err) {}
+      } catch (e) {}
     }
   };
 
@@ -191,19 +235,19 @@ export default function Quran() {
               {showSurahDropdown && (
                 <div className={styles.dropdownMenu}>
                   {surahs.map(surah => (
-                    <button 
-                      key={surah.number} 
-                      className={`${styles.dropdownItem} ${selectedSurah === surah.number ? styles.activeItem : ''}`}
-                      onClick={() => {
-                        setSelectedSurah(surah.number);
-                        setActiveAyah(1);
-                        setShowSurahDropdown(false);
-                      }}
-                    >
-                      <span className={styles.dropIndex}>{surah.number}.</span>
-                      <span className={styles.dropNameAr}>{surah.name}</span>
-                    </button>
-                  ))}
+                  <button 
+                    key={surah.number} 
+                    className={`${styles.dropdownItem} ${selectedSurah === surah.number ? styles.activeItem : ''}`}
+                    onClick={() => {
+                      setSelectedSurah(surah.number);
+                      setActiveAyah(1);
+                      setShowSurahDropdown(false);
+                    }}
+                  >
+                    <span className={styles.dropIndex}>{surah.number}.</span>
+                    <span className={styles.dropNameAr}>{surah.name}</span>
+                  </button>
+                ))}
                 </div>
               )}
             </div>
@@ -218,14 +262,14 @@ export default function Quran() {
               {showReciterDropdown && (
                 <div className={styles.dropdownMenu}>
                   {RECITERS.map(reciter => (
-                    <button 
-                      key={reciter.id} 
-                      className={`${styles.dropdownItem} ${activeReciter === reciter.id ? styles.activeItem : ''}`}
-                      onClick={() => handleReciterSelect(reciter.id)}
-                    >
-                      <span className={styles.dropNameAr} style={{ fontSize: '0.9rem' }}>{reciter.name}</span>
-                    </button>
-                  ))}
+                  <button 
+                    key={reciter.id} 
+                    className={`${styles.dropdownItem} ${activeReciter === reciter.id ? styles.activeItem : ''}`}
+                    onClick={() => handleReciterSelect(reciter.id)}
+                  >
+                    <span className={styles.dropNameAr} style={{ fontSize: '0.9rem' }}>{reciter.name}</span>
+                  </button>
+                ))}
                 </div>
               )}
             </div>
@@ -235,7 +279,7 @@ export default function Quran() {
             <>
               <h2 className={styles.pageTitle}>{currentSurahObj.name}</h2>
               <span className={styles.pageSub}>
-                {currentSurahObj.revelationType === 'Meccan' ? (t('app.home') ? 'مكية' : 'Meccan') : (t('app.home') ? 'مدنية' : 'Medinan')} • {currentSurahObj.numberOfAyahs} {t('quran.ayahsCount').replace('{{count}}', '')}
+                {currentSurahObj.revelationType === 'Meccan' ? (t('app.home') ? 'مكية' : 'Meccan') : (t('app.home') ? 'مدينة' : 'Medinan')} • {currentSurahObj.numberOfAyahs} {t('quran.ayahsCount').replace('{{count}}', '')}
               </span>
             </>
           ) : (

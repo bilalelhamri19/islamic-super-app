@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Users, BookOpen, Activity, MoreVertical, Trash2, Pencil, X, Target, TrendingUp, Download } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import styles from './Admin.module.css';
 
 export default function Admin() {
@@ -22,19 +23,8 @@ export default function Admin() {
     }
   }, [navigate]);
 
-  const [users, setUsers] = useState(() => {
-    try {
-      const saved = localStorage.getItem('mizan_admin_users');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error(e);
-    }
-    return [
-      { name: 'خالد م.', email: 'khaled@example.com', date: 'اليوم، 10:42 ص', status: 'Active' },
-      { name: 'سارة أ.', email: 'sarah@example.com', date: 'اليوم، 09:15 ص', status: 'Active' },
-      { name: 'عمر ف.', email: 'omar@example.com', date: 'أمس', status: 'Pending Review' },
-    ];
-  });
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [newUser, setNewUser] = useState({ name: '', email: '' });
   const [challengeTarget, setChallengeTarget] = useState(() => {
@@ -44,9 +34,73 @@ export default function Admin() {
   const [openMenu, setOpenMenu] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
 
+  // Fetch users
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      // Get local users first
+      let localUsers = [];
+      try {
+        const saved = localStorage.getItem('mizan_admin_users');
+        if (saved) localUsers = JSON.parse(saved);
+      } catch (e) {}
+
+      // Try to get from Supabase
+      if (!supabase.isMock) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (!error && data) {
+            const supabaseUsers = data.map(u => ({
+              id: u.id,
+              name: u.name,
+              email: u.email || u.id.slice(0, 8) + '@...',
+              date: new Date(u.created_at).toLocaleDateString('ar-MA'),
+              status: u.is_admin ? 'Admin' : 'Active'
+            }));
+
+            // Merge local users
+            localUsers.forEach(localU => {
+              if (!supabaseUsers.some(su => su.email === localU.email)) {
+                supabaseUsers.push(localU);
+              }
+            });
+
+            setUsers(supabaseUsers);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          console.error('Error fetching from Supabase:', e);
+        }
+      }
+
+      // Fallback to local only
+      setUsers(localUsers.length > 0 ? localUsers : [
+        { name: 'خالد م.', email: 'khaled@example.com', date: 'اليوم', status: 'Active' },
+        { name: 'سارة أ.', email: 'sara@example.com', date: 'اليوم', status: 'Active' }
+      ]);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error:', err);
+      setLoading(false);
+    }
+  };
+
   // Sync users to localStorage
   useEffect(() => {
-    localStorage.setItem('mizan_admin_users', JSON.stringify(users));
+    if (users.length > 0) {
+      const localOnly = users.filter(u => !u.id);
+      if (localOnly.length > 0) {
+        localStorage.setItem('mizan_admin_users', JSON.stringify(localOnly));
+      }
+    }
   }, [users]);
 
   // Close dropdown on outside click
@@ -60,15 +114,33 @@ export default function Admin() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const approveUser = (index) => {
+  const approveUser = async (index) => {
     const updated = [...users];
     updated[index].status = 'Active';
     setUsers(updated);
+    
+    if (users[index].id && !supabase.isMock) {
+      await supabase
+        .from('profiles')
+        .update({ is_admin: true })
+        .eq('id', users[index].id);
+    }
   };
 
-  const deleteUser = (index) => {
+  const deleteUser = async (index) => {
     if (window.confirm(`هل أنت متأكد من حذف "${users[index].name}"؟`)) {
-      setUsers(users.filter((_, i) => i !== index));
+      const userToDelete = users[index];
+      const newUsers = users.filter((_, i) => i !== index);
+      setUsers(newUsers);
+      
+      if (userToDelete.id && !supabase.isMock) {
+        try {
+          await supabase.auth.admin.deleteUser(userToDelete.id);
+        } catch (e) { /* ignore */ }
+        try {
+          await supabase.from('profiles').delete().eq('id', userToDelete.id);
+        } catch (e) { /* ignore */ }
+      }
     }
     setOpenMenu(null);
   };
@@ -78,7 +150,7 @@ export default function Admin() {
     setOpenMenu(null);
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editingUser || !editingUser.name.trim()) return;
     const updated = [...users];
     updated[editingUser.index] = {
@@ -88,6 +160,16 @@ export default function Admin() {
     };
     setUsers(updated);
     setEditingUser(null);
+
+    if (users[editingUser.index].id && !supabase.isMock) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          name: editingUser.name,
+          is_admin: editingUser.status === 'Admin'
+        })
+        .eq('id', users[editingUser.index].id);
+    }
   };
 
   const addUser = (e) => {
@@ -95,7 +177,7 @@ export default function Admin() {
     if (!newUser.name) return;
     setUsers([...users, { 
       name: newUser.name, 
-      email: newUser.email, 
+      email: newUser.email || newUser.name.toLowerCase().replace(/\s/g, '') + '@local.com', 
       date: 'الآن', 
       status: 'Pending Review' 
     }]);
@@ -223,66 +305,70 @@ export default function Admin() {
           <span className={styles.sectionBadge}>{users.length}</span>
         </div>
 
-        <Card className={styles.tableCard}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>المستخدم</th>
-                <th>تاريخ الانضمام</th>
-                <th>الحالة</th>
-                <th>الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user, i) => (
-                <tr key={i}>
-                  <td className={styles.userNameCell}>
-                    <div className={styles.avatarMini}>{user.name[0]}</div>
-                    <div>
-                      <p className={styles.userName}>{user.name}</p>
-                      {user.email && <p className={styles.userEmail}>{user.email}</p>}
-                    </div>
-                  </td>
-                  <td className="text-small">{user.date}</td>
-                  <td>
-                    <span className={`${styles.statusBadge} ${styles[user.status.replace(' ', '')]}`}>
-                      {user.status === 'Active' ? 'نشط' : 'قيد المراجعة'}
-                    </span>
-                  </td>
-                  <td>
-                    <div className={styles.actionsCell}>
-                      {user.status !== 'Active' && (
-                        <button className={styles.approveBtn} onClick={() => approveUser(i)}>
-                          قبول
-                        </button>
-                      )}
-                      <div className={styles.menuWrapper} ref={openMenu === i ? menuRef : null}>
-                        <button
-                          className={styles.actionBtn}
-                          onClick={() => setOpenMenu(openMenu === i ? null : i)}
-                        >
-                          <MoreVertical size={18} />
-                        </button>
-                        {openMenu === i && (
-                          <div className={`${styles.dropdown} ${i === users.length - 1 ? styles.dropdownUp : ''}`}>
-                            <button className={styles.dropdownItem} onClick={() => startEdit(i)}>
-                              <Pencil size={14} />
-                              تعديل
-                            </button>
-                            <button className={`${styles.dropdownItem} ${styles.dropdownDanger}`} onClick={() => deleteUser(i)}>
-                              <Trash2 size={14} />
-                              حذف
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </td>
+        {loading ? (
+          <div style={{ padding: '2rem', textAlign: 'center' }}>جار تحميل المستخدمين...</div>
+        ) : (
+          <Card className={styles.tableCard}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>المستخدم</th>
+                  <th>تاريخ الانضمام</th>
+                  <th>الحالة</th>
+                  <th>الإجراءات</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+              </thead>
+              <tbody>
+                {users.map((user, i) => (
+                  <tr key={i}>
+                    <td className={styles.userNameCell}>
+                      <div className={styles.avatarMini}>{user.name[0]}</div>
+                      <div>
+                        <p className={styles.userName}>{user.name}</p>
+                        {user.email && <p className={styles.userEmail}>{user.email}</p>}
+                      </div>
+                    </td>
+                    <td className="text-small">{user.date}</td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[user.status.replace(' ', '')]}`}>
+                        {user.status === 'Active' ? 'نشط' : 'قيد المراجعة'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.actionsCell}>
+                        {user.status !== 'Active' && (
+                          <button className={styles.approveBtn} onClick={() => approveUser(i)}>
+                            قبول
+                          </button>
+                        )}
+                        <div className={styles.menuWrapper} ref={openMenu === i ? menuRef : null}>
+                          <button
+                            className={styles.actionBtn}
+                            onClick={() => setOpenMenu(openMenu === i ? null : i)}
+                          >
+                            <MoreVertical size={18} />
+                          </button>
+                          {openMenu === i && (
+                            <div className={`${styles.dropdown} ${i === users.length - 1 ? styles.dropdownUp : ''}`}>
+                              <button className={styles.dropdownItem} onClick={() => startEdit(i)}>
+                                <Pencil size={14} />
+                                تعديل
+                              </button>
+                              <button className={`${styles.dropdownItem} ${styles.dropdownDanger}`} onClick={() => deleteUser(i)}>
+                                <Trash2 size={14} />
+                                حذف
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        )}
 
         {/* Add New User Form */}
         <form className={styles.addUserForm} onSubmit={addUser}>

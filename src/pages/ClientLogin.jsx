@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
+import { supabase } from '../lib/supabase';
 import styles from './AdminLogin.module.css';
 
 export default function ClientLogin() {
@@ -10,6 +11,7 @@ export default function ClientLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const addUserToLocalList = (userData) => {
     let users = [];
@@ -38,7 +40,41 @@ export default function ClientLogin() {
     localStorage.setItem('mizan_admin_users', JSON.stringify(users));
   };
 
-  const loginUser = (userObj) => {
+  const loginUser = async (userObj, userData = null) => {
+    // Try to fetch user data from Supabase
+    if (userData && !supabase.isMock) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userData.id)
+          .single();
+        
+        const { data: stats } = await supabase
+          .from('user_stats')
+          .select('*')
+          .eq('user_id', userData.id)
+          .single();
+
+        if (profile) {
+          userObj.name = profile.name;
+          userObj.isAdmin = profile.is_admin || false;
+        }
+        if (stats) {
+          localStorage.setItem('mizan_user_stats', JSON.stringify({
+            level: stats.level,
+            points: stats.points,
+            dailyRead: {
+              date: stats.last_read_date,
+              count: stats.daily_read_count
+            }
+          }));
+        }
+      } catch (e) {
+        console.error('Error fetching user data:', e);
+      }
+    }
+
     addUserToLocalList(userObj);
     localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
     window.dispatchEvent(new Event('mizan_stats_updated'));
@@ -49,24 +85,68 @@ export default function ClientLogin() {
     loginUser({ name: t('app.guest'), isAdmin: false, email: 'guest@local' });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // التحقق من البيانات المحلية
-    const users = JSON.parse(localStorage.getItem('mizan_admin_users') || '[]');
-    const localUser = users.find(u => u.email === email);
-    
-    if (localUser || email === 'bilalelhamri2006@gmail.com') {
-      const userObj = { 
-        email, 
-        name: localUser?.name || email.split('@')[0], 
-        isAdmin: email === 'bilalelhamri2006@gmail.com',
-        uid: 'local-' + Date.now()
-      };
-      loginUser(userObj);
-    } else {
-      setError(t('auth.invalid_creds') || 'البريد أو كلمة المرور غير صحيحة');
+    try {
+      // Try Supabase first
+      if (!supabase.isMock) {
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (!signInError && data.user) {
+          const userObj = {
+            email: data.user.email,
+            uid: data.user.id,
+            isAdmin: data.user.email === 'bilalelhamri2006@gmail.com'
+          };
+          await loginUser(userObj, data.user);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Fallback to local storage
+      const users = JSON.parse(localStorage.getItem('mizan_admin_users') || '[]');
+      const localUser = users.find(u => u.email === email);
+      
+      if (localUser || email === 'bilalelhamri2006@gmail.com') {
+        const userObj = { 
+          email, 
+          name: localUser?.name || email.split('@')[0], 
+          isAdmin: email === 'bilalelhamri2006@gmail.com',
+          uid: 'local-' + Date.now()
+        };
+        await loginUser(userObj);
+        setLoading(false);
+      } else {
+        setError(t('auth.invalid_creds') || 'البريد أو كلمة المرور غير صحيحة');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      
+      // Fallback
+      const users = JSON.parse(localStorage.getItem('mizan_admin_users') || '[]');
+      const localUser = users.find(u => u.email === email);
+      
+      if (localUser || email === 'bilalelhamri2006@gmail.com') {
+        const userObj = { 
+          email, 
+          name: localUser?.name || email.split('@')[0], 
+          isAdmin: email === 'bilalelhamri2006@gmail.com',
+          uid: 'local-' + Date.now()
+        };
+        await loginUser(userObj);
+        setLoading(false);
+      } else {
+        setError(t('auth.invalid_creds') || 'البريد أو كلمة المرور غير صحيحة');
+        setLoading(false);
+      }
     }
   };
 
@@ -116,8 +196,8 @@ export default function ClientLogin() {
             />
           </div>
 
-          <Button type="submit" variant="primary" className={styles.submitBtn}>
-            {t('auth.signin')}
+          <Button type="submit" variant="primary" className={styles.submitBtn} disabled={loading}>
+            {loading ? 'جار الدخول...' : t('auth.signin')}
           </Button>
         </form>
 
