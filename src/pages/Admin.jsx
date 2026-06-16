@@ -132,14 +132,20 @@ export default function Admin() {
       const userToDelete = users[index];
       const newUsers = users.filter((_, i) => i !== index);
       setUsers(newUsers);
+
+      // تحديث localStorage لحذف المستخدم
+      const localUsers = JSON.parse(localStorage.getItem('mizan_admin_users') || '[]');
+      const filteredLocalUsers = localUsers.filter(u => u.email !== userToDelete.email);
+      localStorage.setItem('mizan_admin_users', JSON.stringify(filteredLocalUsers));
       
+      // محاولة الحذف من Supabase
       if (userToDelete.id && !supabase.isMock) {
         try {
-          await supabase.auth.admin.deleteUser(userToDelete.id);
-        } catch (e) { /* ignore */ }
-        try {
+          // ملاحظة: لحذف من auth.users تحتاج صلاحيات admin secret key، نحذف من profiles فقط
           await supabase.from('profiles').delete().eq('id', userToDelete.id);
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+          console.log('Could not delete from Supabase, local only:', e);
+        }
       }
     }
     setOpenMenu(null);
@@ -161,6 +167,17 @@ export default function Admin() {
     setUsers(updated);
     setEditingUser(null);
 
+    // تحديث في localStorage
+    const localUsers = JSON.parse(localStorage.getItem('mizan_admin_users') || '[]');
+    const updatedLocalUsers = localUsers.map(u => {
+      if (u.email === updated[editingUser.index].email) {
+        return { ...u, name: editingUser.name, status: editingUser.status };
+      }
+      return u;
+    });
+    localStorage.setItem('mizan_admin_users', JSON.stringify(updatedLocalUsers));
+
+    // تحديث في Supabase
     if (users[editingUser.index].id && !supabase.isMock) {
       await supabase
         .from('profiles')
