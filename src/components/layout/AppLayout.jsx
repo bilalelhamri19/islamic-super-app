@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, BookOpen, Trophy, Settings, LogIn, LogOut, Sun, Moon, Languages, Heart, ScrollText, Bell, BellOff, VolumeX } from 'lucide-react';
+import { Home, BookOpen, Trophy, Settings, LogIn, LogOut, Sun, Moon, Languages, Heart, ScrollText, Bell, BellOff, VolumeX, User } from 'lucide-react';
 import styles from './AppLayout.module.css';
 import { usePrayerTimes } from '../../hooks/usePrayerTimes';
 import { useAdhanPlayer } from '../../hooks/useAdhanPlayer';
@@ -82,12 +82,13 @@ export function AppLayout() {
   }, []);
 
   const allNavItems = [
-    { name: t('app.home') || 'الرئيسية', path: '/', icon: <Home size={22} /> },
-    { name: t('app.quran') || 'القرآن', path: '/quran', icon: <BookOpen size={22} /> },
-    { name: 'أسماء الله الحسنى', path: '/names', icon: <ScrollText size={22} /> },
-    { name: 'المسبحة', path: '/tasbeeh', icon: <Heart size={22} /> },
-    { name: t('app.learning') || 'مسار العلم', path: '/game', icon: <Trophy size={22} /> },
-    { name: t('app.admin') || 'الإدارة', path: '/admin', icon: <Settings size={22} />, adminOnly: true },
+    { name: t('app.home'), path: '/', icon: <Home size={22} /> },
+    { name: t('app.quran'), path: '/quran', icon: <BookOpen size={22} /> },
+    { name: t('app.adhkar') || 'الأذكار', path: '/adhkar', icon: <Sun size={22} /> },
+    { name: t('app.names') || 'أسماء الله', path: '/names', icon: <ScrollText size={22} /> },
+    { name: t('app.tasbeeh') || 'المسبحة', path: '/tasbeeh', icon: <Heart size={22} /> },
+    { name: t('app.learning'), path: '/game', icon: <Trophy size={22} /> },
+    { name: t('app.admin'), path: '/admin', icon: <Settings size={22} />, adminOnly: true },
   ];
 
   const navItems = allNavItems.filter(item => !item.adminOnly || user?.isAdmin);
@@ -95,6 +96,7 @@ export function AppLayout() {
   const handleLogout = () => {
     localStorage.removeItem('mizan_auth_user');
     setUser(null);
+    navigate('/');
   };
 
   return (
@@ -124,17 +126,17 @@ export function AppLayout() {
         </nav>
 
         <div className={styles.bottomSection}>
-          <div className={styles.profile}>
+          <NavLink to="/profile" className={styles.profile}>
             <div className={styles.avatar}>
               {user?.isAdmin ? 'A' : '☪'}
             </div>
             <div className={styles.userInfo}>
-              <span className={styles.userName}>{user?.isAdmin ? t('app.admin') : 'مسلم'}</span>
+              <span className={styles.userName}>{user?.name || user?.email || t('app.guest')}</span>
               <span className={styles.userStatus}>{t('app.level')} {stats.level} {t('app.seeker')}</span>
             </div>
-          </div>
+          </NavLink>
 
-          {user?.isAdmin && (
+          {user && (
             <button className={styles.logoutBtn} onClick={handleLogout} title={t('app.logout')}>
               <LogOut size={16} />
               {t('app.logout')}
@@ -148,7 +150,7 @@ export function AppLayout() {
         <div className={styles.header}>
           <div className={styles.welcome}>
             <p className="text-small">{t('app.greeting')}</p>
-            <h2 className="heading-md">{user?.isAdmin ? t('app.admin') : 'طالب علم'}</h2>
+            <h2 className="heading-md">{user?.name || user?.email || (user?.isAdmin ? t('app.admin') : t('app.guest'))}</h2>
           </div>
           <div className={styles.actions}>
             {permission !== 'granted' && (
@@ -170,17 +172,9 @@ export function AppLayout() {
                 <Bell size={20} />
               </button>
             )}
-            <button 
-              className={styles.themeToggle} 
-              onClick={() => {
-                const newLang = i18n.language.startsWith('ar') ? 'en' : 'ar';
-                i18n.changeLanguage(newLang);
-                document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-              }}
-              title="Switch Language"
-            >
-              <Languages size={20} />
-            </button>
+            <NavLink to="/profile" className={styles.themeToggle} title={t('app.profile')}>
+              <User size={20} />
+            </NavLink>
             <button 
               className={styles.themeToggle} 
               onClick={() => setIsDarkMode(!isDarkMode)}

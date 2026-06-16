@@ -242,6 +242,8 @@
   flex-shrink: 0;
   display: flex;
   justify-content: center;
+  gap: 8px;
+  align-items: center;
 }
 
 .verseNumber {
@@ -256,6 +258,28 @@
   font-size: 0.9rem;
   font-weight: 800;
   color: var(--primary-emerald);
+}
+
+.bookmarkBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(15, 92, 77, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-emerald);
+  transition: all 0.2s;
+}
+
+.bookmarkBtnActive {
+  background: rgba(200, 169, 107, 0.15);
+  color: var(--accent-gold);
+}
+
+.activeVerseRow .bookmarkBtnActive {
+  background: rgba(200, 169, 107, 0.25);
 }
 
 .activeVerseRow .verseNumber {

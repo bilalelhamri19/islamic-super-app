@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Users, BookOpen, Activity, MoreVertical, Trash2, Pencil, X, Target, TrendingUp, Download, LogOut } from 'lucide-react';
+import { Users, BookOpen, Activity, MoreVertical, Trash2, Pencil, X, Target, TrendingUp, Download } from 'lucide-react';
 import styles from './Admin.module.css';
 
 export default function Admin() {
@@ -113,11 +113,6 @@ export default function Admin() {
     URL.revokeObjectURL(url);
   };
 
-  const logout = () => {
-    localStorage.removeItem('mizan_auth_user');
-    navigate('/login');
-  };
-
   const activeUsers = users.filter(u => u.status === 'Active').length;
   const pendingUsers = users.filter(u => u.status === 'Pending Review').length;
 
@@ -134,10 +129,6 @@ export default function Admin() {
           <button className={styles.reportBtn} onClick={generateReport}>
             <Download size={16} />
             تصدير التقرير
-          </button>
-          <button className={styles.logoutBtn} onClick={logout}>
-            <LogOut size={16} />
-            تسجيل الخروج
           </button>
         </div>
       </div>
@@ -268,7 +259,7 @@ export default function Admin() {
                           <MoreVertical size={18} />
                         </button>
                         {openMenu === i && (
-                          <div className={styles.dropdown}>
+                          <div className={`${styles.dropdown} ${i === users.length - 1 ? styles.dropdownUp : ''}`}>
                             <button className={styles.dropdownItem} onClick={() => startEdit(i)}>
                               <Pencil size={14} />
                               تعديل

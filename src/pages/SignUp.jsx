@@ -3,14 +3,16 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
 import { auth } from '../lib/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import styles from './AdminLogin.module.css';
 
-export default function ClientLogin() {
+export default function SignUp() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -34,8 +36,8 @@ export default function ClientLogin() {
 
     // Add new user
     const newUser = {
-      name: userData.name || userData.email?.split('@')[0] || t('app.guest'),
-      email: userData.email || 'guest@local',
+      name: userData.name || userData.email.split('@')[0],
+      email: userData.email,
       date: new Date().toLocaleDateString('ar-MA'),
       status: 'Active' // New users are active by default
     };
@@ -44,37 +46,46 @@ export default function ClientLogin() {
     localStorage.setItem('mizan_admin_users', JSON.stringify(users));
   };
 
-  const loginUser = (userObj) => {
-    addUserToAdminList(userObj);
-    localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
-    window.dispatchEvent(new Event('mizan_stats_updated'));
-    navigate('/');
-  };
-
-  const handleGuestLogin = () => {
-    loginUser({ name: t('app.guest'), isAdmin: false, email: 'guest@local' });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (password !== confirmPassword) {
+      setError(t('auth.password_mismatch'));
+      return;
+    }
+
     setLoading(true);
 
+    // Try Firebase auth first, fallback to local
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userObj = {
         email: userCredential.user.email,
         uid: userCredential.user.uid,
-        isAdmin: false
+        isAdmin: false,
+        name: name || email.split('@')[0]
       };
-      loginUser(userObj);
+      
+      // Add user to admin list
+      addUserToAdminList(userObj);
+      
+      localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
+      window.dispatchEvent(new Event('mizan_stats_updated'));
+      navigate('/');
     } catch (firebaseErr) {
+      // Fallback to local storage
       try {
-        // Fallback: just use local storage
-        const userObj = { email, name: email.split('@')[0], isAdmin: false };
-        loginUser(userObj);
+        const userObj = { email, name: name || email.split('@')[0], isAdmin: false };
+        
+        // Add user to admin list
+        addUserToAdminList(userObj);
+        
+        localStorage.setItem('mizan_auth_user', JSON.stringify(userObj));
+        window.dispatchEvent(new Event('mizan_stats_updated'));
+        navigate('/');
       } catch (err) {
-        setError(t('auth.invalid_creds'));
+        setError(t('auth.error'));
       }
     } finally {
       setLoading(false);
@@ -90,15 +101,28 @@ export default function ClientLogin() {
         </div>
         
         <div className={styles.welcomeSection}>
-          <h2>{t('auth.welcome_back')}</h2>
-          <p className="text-body">{t('auth.client_login')}</p>
+          <h2>{t('auth.welcome')}</h2>
+          <p className="text-body">{t('auth.client_signup')}</p>
         </div>
 
         {error && (
           <div className={styles.errorBox}>{error}</div>
         )}
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSignUp} className={styles.form}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="name" className={styles.label}>{t('admin.name')}</label>
+            <input 
+              type="text" 
+              id="name"
+              className={styles.input} 
+              placeholder={t('admin.name')}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required 
+            />
+          </div>
+          
           <div className={styles.inputGroup}>
             <label htmlFor="email" className={styles.label}>{t('auth.email')}</label>
             <input 
@@ -127,27 +151,30 @@ export default function ClientLogin() {
             />
           </div>
 
+          <div className={styles.inputGroup}>
+            <div className={styles.passwordHeader}>
+              <label htmlFor="confirmPassword" className={styles.label}>{t('auth.confirm_password')}</label>
+            </div>
+            <input 
+              type="password" 
+              id="confirmPassword"
+              className={styles.input} 
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required 
+            />
+          </div>
+
           <Button type="submit" variant="primary" className={styles.submitBtn} disabled={loading}>
-            {loading ? '...' : t('auth.signin')}
+            {loading ? '...' : t('auth.signup')}
           </Button>
         </form>
 
-        <div style={{ marginTop: '1rem', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
-            <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-light)' }} />
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>أو</span>
-            <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-light)' }} />
-          </div>
-          
-          <Button variant="secondary" className={styles.submitBtn} onClick={handleGuestLogin}>
-            {t('app.guest')}
-          </Button>
-        </div>
-
         <div className={styles.footer}>
           <p className="text-body">
-            {t('auth.no_account')}
-            <Link to="/signup" className={styles.registerLink}>{t('auth.register')}</Link>
+            {t('auth.have_account')}
+            <Link to="/client-login" className={styles.registerLink}>{t('auth.login')}</Link>
           </p>
         </div>
       </div>

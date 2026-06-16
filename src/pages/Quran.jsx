@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Settings2, BookOpenText, FastForward, Rewind, Play, Pause, ChevronDown, Mic2 } from 'lucide-react';
+import { Settings2, BookOpenText, FastForward, Rewind, Play, Pause, ChevronDown, Mic2, Bookmark, BookmarkCheck } from 'lucide-react';
 import styles from './Quran.module.css';
 
 const RECITERS = [
@@ -20,6 +21,7 @@ const RECITERS = [
 ];
 
 export default function Quran() {
+  const { t } = useTranslation();
   const [showTafsir, setShowTafsir] = useState(false);
   const [surahs, setSurahs] = useState([]);
   const [selectedSurah, setSelectedSurah] = useState(() => {
@@ -27,7 +29,7 @@ export default function Quran() {
       const saved = localStorage.getItem('mizan_last_read');
       if (saved) return JSON.parse(saved).surahNumber || 18;
     } catch (e) {}
-    return 18; // Default to Al-Kahf
+    return 18;
   });
   const [activeAyah, setActiveAyah] = useState(() => {
     try {
@@ -41,7 +43,14 @@ export default function Quran() {
       const saved = localStorage.getItem('mizan_reciter');
       if (saved) return saved;
     } catch (e) {}
-    return 'afs'; // Default to Alafasy
+    return 'afs';
+  });
+  const [bookmarks, setBookmarks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('mizan_bookmarks');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
   const [ayahs, setAyahs] = useState([]);
@@ -82,7 +91,7 @@ export default function Quran() {
     ])
     .then(([arData, tafsirData]) => {
       if (arData.code === 200) {
-        const bismillahPrefix = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ";
+        const bismillahPrefix = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ";
         const mergedAyahs = arData.data.ayahs.map((ayah, index) => {
           let text = ayah.text;
           if (index === 0 && selectedSurah !== 1 && selectedSurah !== 9 && text.startsWith(bismillahPrefix)) {
@@ -91,7 +100,7 @@ export default function Quran() {
           return {
             number: ayah.numberInSurah,
             text: text,
-            tafsir: (tafsirData && tafsirData.code === 200) ? tafsirData.data.ayahs[index].text : 'تفسير غير متوفر حالياً لهذه الآية.'
+            tafsir: (tafsirData && tafsirData.code === 200) ? tafsirData.data.ayahs[index].text : t('app.home') ? 'تفسير غير متاح حالياً لهذه الآية' : 'Tafsir not available for this verse.'
           };
         });
         setAyahs(mergedAyahs);
@@ -110,8 +119,25 @@ export default function Quran() {
     }
   }, [loading, selectedSurah, ayahs.length]);
 
+  const isBookmarked = (surahNum, ayahNum) => {
+    return bookmarks.some(b => b.surah === surahNum && b.ayah === ayahNum);
+  };
+
+  const toggleBookmark = (surahNum, ayahNum) => {
+    const newBookmarks = [...bookmarks];
+    const index = newBookmarks.findIndex(b => b.surah === surahNum && b.ayah === ayahNum);
+    if (index > -1) {
+      newBookmarks.splice(index, 1);
+    } else {
+      newBookmarks.push({ surah: surahNum, ayah: ayahNum, timestamp: Date.now() });
+    }
+    setBookmarks(newBookmarks);
+    localStorage.setItem('mizan_bookmarks', JSON.stringify(newBookmarks));
+  };
+
   const handleVerseClick = (ayahNumber) => {
     setActiveAyah(ayahNumber);
+    const currentSurahObj = surahs.find(s => s.number === selectedSurah);
     if (currentSurahObj) {
       localStorage.setItem('mizan_last_read', JSON.stringify({
         surahNumber: selectedSurah,
@@ -153,14 +179,12 @@ export default function Quran() {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
         <div className={styles.surahInfo}>
           <div className={styles.selectorsRow}>
-            {/* Surah Selector */}
             <div className={styles.dropdownWrapper}>
               <button className={styles.selectorBtn} onClick={() => setShowSurahDropdown(!showSurahDropdown)}>
-                <span className={styles.badgePrimary}>السورة {selectedSurah}</span>
+                <span className={styles.badgePrimary}>{t('app.home') ? `السورة ${selectedSurah}` : `Surah ${selectedSurah}`}</span>
                 <ChevronDown size={14} className={styles.selectorIcon} />
               </button>
               
@@ -184,7 +208,6 @@ export default function Quran() {
               )}
             </div>
 
-            {/* Reciter Selector */}
             <div className={styles.dropdownWrapper}>
               <button className={styles.selectorBtn} onClick={() => setShowReciterDropdown(!showReciterDropdown)}>
                 <Mic2 size={14} className={styles.selectorIcon} />
@@ -212,11 +235,11 @@ export default function Quran() {
             <>
               <h2 className={styles.pageTitle}>{currentSurahObj.name}</h2>
               <span className={styles.pageSub}>
-                {currentSurahObj.revelationType === 'Meccan' ? 'مكية' : 'مدنية'} • {currentSurahObj.numberOfAyahs} آية
+                {currentSurahObj.revelationType === 'Meccan' ? (t('app.home') ? 'مكية' : 'Meccan') : (t('app.home') ? 'مدنية' : 'Medinan')} • {currentSurahObj.numberOfAyahs} {t('quran.ayahsCount').replace('{{count}}', '')}
               </span>
             </>
           ) : (
-            <h2 className={styles.pageTitle}>جاري التحميل...</h2>
+            <h2 className={styles.pageTitle}>{t('quran.loadingAyahs')}</h2>
           )}
         </div>
         
@@ -224,17 +247,16 @@ export default function Quran() {
           <button 
             className={`${styles.iconBtn} ${showTafsir ? styles.iconBtnActive : ''}`} 
             onClick={() => setShowTafsir(!showTafsir)}
-            title="التفسير"
+            title={t('quran.showTafsir')}
           >
             <BookOpenText size={20} />
           </button>
-          <button className={styles.iconBtn} title="الإعدادات">
+          <button className={styles.iconBtn} title={t('quran.settings')}>
             <Settings2 size={20} />
           </button>
         </div>
       </div>
 
-      {/* Reader Area */}
       <div className={styles.readerArea}>
         {selectedSurah !== 1 && selectedSurah !== 9 && (
           <div className={styles.bismillah}>
@@ -245,7 +267,7 @@ export default function Quran() {
         {loading ? (
           <div className={styles.loaderContainer}>
             <div className={styles.spinner}></div>
-            <p className={styles.loadingText}>جاري تحميل الآيات...</p>
+            <p className={styles.loadingText}>{t('quran.loadingAyahs')}</p>
           </div>
         ) : (
           <div className={styles.versesList}>
@@ -258,6 +280,13 @@ export default function Quran() {
               >
                 <div className={styles.verseNumberWrap}>
                   <div className={styles.verseNumber}>{ayah.number}</div>
+                  <button 
+                    className={`${styles.bookmarkBtn} ${isBookmarked(selectedSurah, ayah.number) ? styles.bookmarkBtnActive : ''}`}
+                    onClick={(e) => { e.stopPropagation(); toggleBookmark(selectedSurah, ayah.number); }}
+                    title={t('quran.bookmark')}
+                  >
+                    {isBookmarked(selectedSurah, ayah.number) ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+                  </button>
                 </div>
                 <div className={styles.verseContent}>
                   <p className={styles.quranicText}>{ayah.text} ۝</p>
@@ -265,7 +294,7 @@ export default function Quran() {
                   {showTafsir && (
                     <div className={styles.tafsirPanel}>
                       <div className={styles.tafsirHeader}>
-                        <span className={styles.tafsirLabel}>تفسير الجلالين</span>
+                        <span className={styles.tafsirLabel}>{t('quran.tafsirJalalayn')}</span>
                       </div>
                       <p className={styles.tafsirText}>{ayah.tafsir}</p>
                     </div>
@@ -277,20 +306,19 @@ export default function Quran() {
         )}
       </div>
 
-      {/* Floating Audio Player */}
       <div className={styles.audioPlayer}>
         <div className={styles.playerInfo}>
           <span className={styles.reciterName}>{currentReciterObj.name}</span>
           <span className={styles.nowPlaying}>
-            سورة {currentSurahObj?.name.replace('سُورَةُ ', '') || "..."}
+            {t('app.home') ? 'سورة ' : 'Surah '}{currentSurahObj?.name.replace('سُورَةُ ', '') || "..."}
           </span>
         </div>
         <div className={styles.playerControls}>
-          <button className={styles.controlBtn} onClick={nextSurah} title="السورة التالية"><FastForward size={20} /></button>
+          <button className={styles.controlBtn} onClick={nextSurah} title={t('quran.nextSurah')}><FastForward size={20} /></button>
           <button className={`${styles.controlBtn} ${styles.playBtn}`} onClick={toggleAudio}>
             {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
           </button>
-          <button className={styles.controlBtn} onClick={prevSurah} title="السورة السابقة"><Rewind size={20} /></button>
+          <button className={styles.controlBtn} onClick={prevSurah} title={t('quran.prevSurah')}><Rewind size={20} /></button>
         </div>
         <audio 
           ref={audioRef} 
